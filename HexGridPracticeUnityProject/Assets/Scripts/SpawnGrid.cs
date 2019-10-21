@@ -34,12 +34,15 @@ public class SpawnGrid : MonoBehaviour
                 Cell[x][z].AddComponent<MeshFilter>();
                 Cell[x][z].GetComponent<MeshFilter>().mesh = HexMesh;
 
-                if (Cell[x][z].transform.localScale.y > 1)
+                if (Cell[x][z].transform.localScale.y > 1.8f)
                     Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[0];
-                else if (Cell[x][z].transform.localScale.y > 0.5)
+                else if (Cell[x][z].transform.localScale.y > 1.2f)
                     Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[1];
-                else
+                else if (Cell[x][z].transform.localScale.y > 0.5f)
                     Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[2];
+                else
+                    Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[3];
+
             }
             if (!SecondRow)
                 SecondRow = true;
