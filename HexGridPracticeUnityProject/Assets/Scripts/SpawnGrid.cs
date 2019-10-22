@@ -4,58 +4,106 @@ using UnityEngine;
 
 public class SpawnGrid : MonoBehaviour
 {
-    public Mesh HexMesh;
-    public Material[] CellMaterial;
-    public int GridSize = 2;
+    public GameObject TilePrefab;
     public List<List<GameObject>> Cell;
     bool SecondRow = false;
+    float timer = 0.0f;
+    float[,] Noise;
+    public int RepeatAmount = 2;
+    public float RandomNumber;
+    public Vector2 GridSize;
+    bool Pause = false;
+    public float Freqancy = 0.01f;
     // Start is called before the first frame update
     void Start()
     {
+        RandomNumber = Random.value;
+
         Cell = new List<List<GameObject>>();
 
-        for (int x = 0; x < GridSize * GridSize; x++)
+        for (int x = 0; x < (int)GridSize.x * 2; x++)
         {
             Cell.Add(new List<GameObject>());
 
+            //if (!SecondRow)
+            //    SecondRow = true;
+            //else
+            //    SecondRow = false;
 
+            /*
+                var x = size * 3f/2f * hex.col
+                var y = size * Mathf.Sqrt(3f) * (hex.row + 0.5f * (hex.col & 1)) 
+             
+             */
 
-            for (int z = 0; z < GridSize; z++)
+            for (int z = 0; z < (int)GridSize.y; z++)
             {
-                Cell[x].Add(new GameObject("Cell: " + x + ", " + z));
+                Cell[x].Add(Instantiate(TilePrefab));
 
-                if (SecondRow)
-                    Cell[x][z].transform.position = new Vector3(((x) - (GridSize * GridSize / 2)) * 0.5f, 0, ((z + 0.5f) - (GridSize / 2)) * 1.75f);
-                else
-                    Cell[x][z].transform.position = new Vector3(((x) - (GridSize * GridSize / 2)) * 0.5f , 0, (z - (GridSize / 2)) * 1.75f);
+                //if (SecondRow)
+                //    Cell[x][z].transform.position = new Vector3(((x) - ((int)GridSize.x)) * 0.5f, 0, ((z + 0.5f) - ((int)GridSize.y / 2)) * 1.75f);
+                //else
+                //    Cell[x][z].transform.position = new Vector3(((x) - ((int)GridSize.x)) * 0.5f , 0, (z - ((int)GridSize.y / 2)) * 1.75f);
 
-                Cell[x][z].transform.localScale = new Vector3(1, Random.value * 2, 1);
-                Cell[x][z].AddComponent<MeshRenderer>();
-                Cell[x][z].AddComponent<MeshFilter>();
-                Cell[x][z].GetComponent<MeshFilter>().mesh = HexMesh;
+                float scale = .57f;
 
-                if (Cell[x][z].transform.localScale.y > 1.8f)
-                    Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[0];
-                else if (Cell[x][z].transform.localScale.y > 1.2f)
-                    Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[1];
-                else if (Cell[x][z].transform.localScale.y > 0.5f)
-                    Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[2];
-                else
-                    Cell[x][z].GetComponent<MeshRenderer>().material = CellMaterial[3];
+                var lx = scale * Mathf.Sqrt(3f) * (z + 0.5f * (x & 1));
+                var lz = scale * 3f / 2f * x;
+
+
+                Cell[x][z].transform.position = new Vector3(lx, 0, lz);
+
+
+                Cell[x][z].transform.localScale = new Vector3(1, 1, 1);
+
+                Cell[x][z].GetComponent<CellBehaviour>().SetTileProperties(x, z);
 
             }
-            if (!SecondRow)
-                SecondRow = true;
-            else
-                SecondRow = false;
         }
 
+        Noise = new float[Cell.Count, Cell[0].Count];
 
+        GenerateNoise();
     }
 
-    // Update is called once per frame
-    void Update()
+    void GenerateNoise()
     {
-        
+            RandomNumber += 0.05f;
+        for (int i = 0; i < RepeatAmount; i++)
+        {
+            for (int x = 0; x < Cell.Count; x++)
+            {
+                for (int z = 0; z < Cell[x].Count; z++)
+                {
+                    if (i == 1)
+                        Noise[x, z] = Mathf.PerlinNoise(((float)x * Freqancy + RandomNumber) / 2, (float)z * Freqancy + RandomNumber);
+                    else
+                        Noise[x, z] += Mathf.PingPong( Mathf.PerlinNoise(((float)x * Freqancy + (RandomNumber + (i * 2))) / 2, (float)z * Freqancy + (RandomNumber + (i * 2))),1);
+                }
+            }
+        }
+    }
+
+
+    private void Update()
+    {
+        timer += Time.deltaTime * 5.0f;
+
+
+        if (Input.GetMouseButton(0) && timer > 0.2f)
+        {
+            GenerateNoise();
+            for (int x = 0; x < Cell.Count; x++)
+            {
+                for (int z = 0; z < Cell[x].Count; z++)
+                {
+                    Cell[x][z].transform.localScale = new Vector3(1, Noise[x, z], 1);
+
+                    Cell[x][z].GetComponent<CellBehaviour>().SetTileProperties(x, z);
+                }
+            }
+
+            timer = 0.0f;
+        }
     }
 }
