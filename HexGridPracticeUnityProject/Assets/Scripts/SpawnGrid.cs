@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class SpawnGrid : MonoBehaviour
 {
+    int[,] axial_directions = new int[6, 2] {
+        {+1, 0}, {+1, -1}, {0, -1},
+        {-1, 0}, {-1, +1}, {0, +1}
+    };
+
     public GameObject TilePrefab;
     public List<List<GameObject>> Cell;
     float timer = 0.0f;
@@ -23,61 +28,73 @@ public class SpawnGrid : MonoBehaviour
         Cell = new List<List<GameObject>>();
         Cell.Add(new List<GameObject>());
 
-        float SecondChunkCenter = ChunkSize * 1.85f;
+        float SecondChunkCenter = ChunkSize * 2f;
 
-        tempPos = new List<Vector2>();
-        tempPos.Add(FlatToWorld(0, 0));
-        goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[0].x, 1.0f, tempPos[0].y), new Quaternion(), this.transform);
-        goDaddy.GetComponent<MeshRenderer>().enabled = false;
-        goDaddy.transform.Rotate(new Vector3(0, 0, 0));
+        for(int i = 0; i < 6; ++i)
+        {
+            var offsetx = axial_directions[i, 0];
+            var offsety = axial_directions[i, 1];
 
-        CreateHexegon(0,tempPos[0]);
+            tempPos = new List<Vector2>();
+
+            tempPos.Add(FlatToWorld((int)SecondChunkCenter * offsetx, (int)SecondChunkCenter * offsety));
+
+            goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[0].x, 1.0f, tempPos[0].y), new Quaternion(), this.transform);
+
+            goDaddy.GetComponent<MeshRenderer>().enabled = false;
+            //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
+
+            Createegon(i, tempPos[0]);
+        }
+
+        
+
 
         //Cell.Add(new List<GameObject>());
         //tempPos.Add(FlatToWorld((int)SecondChunkCenter, 0));
         //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[1].x, 1.0f, tempPos[1].y), new Quaternion(), this.transform);
         //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
-        //
-        //CreateHexegon(1,tempPos[1]);
-        //
+        
+        //Createegon(1,tempPos[1]);
+        
         //Cell.Add(new List<GameObject>());
         //tempPos.Add(FlatToWorld((int)SecondChunkCenter, (int)-SecondChunkCenter));
         //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[2].x, 1.0f, tempPos[2].y), new Quaternion(), this.transform);
         //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
-        //
-        //CreateHexegon(2,tempPos[2]);
-        //
+        
+        //Createegon(2,tempPos[2]);
+        
         //Cell.Add(new List<GameObject>());
         //tempPos.Add(FlatToWorld(0, (int)SecondChunkCenter));
         //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[3].x, 1.0f, tempPos[3].y), new Quaternion(), this.transform);
         //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
-        //
-        //CreateHexegon(3,tempPos[3]);
-        //
+        
+        //Createegon(3,tempPos[3]);
+        
         //Cell.Add(new List<GameObject>());
         //tempPos.Add(FlatToWorld((int)-SecondChunkCenter, (int)SecondChunkCenter));
         //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[4].x, 1.0f, tempPos[4].y), new Quaternion(), this.transform);
         //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
-        //
-        //CreateHexegon(4,tempPos[4]);
-        //
+        
+        //Createegon(4,tempPos[4]);
+        
         //Cell.Add(new List<GameObject>());
         //tempPos.Add(FlatToWorld((int)-SecondChunkCenter, 0));
         //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[5].x, 1.0f, tempPos[5].y), new Quaternion(), this.transform);
         //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
-        //
-        //
-        //CreateHexegon(5,tempPos[5]);
-        //
+        
+        
+        //Createegon(5,tempPos[5]);
+        
         //Cell.Add(new List<GameObject>());
         //tempPos.Add(FlatToWorld(0, (int)-SecondChunkCenter));
         //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[6].x, 1.0f, tempPos[6].y), new Quaternion(), this.transform);
         //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
-        //
-        //CreateHexegon(6,tempPos[6]);
+        
+        //Createegon(6,tempPos[6]);
     }
 
-    void CreateHexegon(int index,Vector2 OffSet)
+    void Createegon(int index, Vector2 OffSet)
     {
         for (int q = -ChunkSize; q <= ChunkSize; q++)
         {
@@ -125,7 +142,7 @@ public class SpawnGrid : MonoBehaviour
         timer += Time.deltaTime * 5.0f;
 
 
-        if (Input.GetMouseButton(0) && timer > 0.2f)
+        if (Input.GetMouseButton(0) && timer > 0.1f)
         {
             RandomNumber += 0.05f;
             for (int i = 0; i < Cell.Count; i++)
