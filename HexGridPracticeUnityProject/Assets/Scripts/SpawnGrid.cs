@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,85 +7,119 @@ public class SpawnGrid : MonoBehaviour
 {
     public GameObject TilePrefab;
     public List<List<GameObject>> Cell;
-    bool SecondRow = false;
     float timer = 0.0f;
     float[,] Noise;
+    float scale = .57f;
     public int RepeatAmount = 2;
     public float RandomNumber;
-    public Vector2 GridSize;
-    bool Pause = false;
+    public int ChunkSize = 2;
     public float Freqancy = 0.01f;
-    // Start is called before the first frame update
+    GameObject goDaddy;
+    List <Vector2> tempPos;
     void Start()
     {
-        RandomNumber = Random.value;
+        RandomNumber = UnityEngine.Random.value;
 
         Cell = new List<List<GameObject>>();
+        Cell.Add(new List<GameObject>());
 
-        for (int x = 0; x < (int)GridSize.x * 2; x++)
-        {
-            Cell.Add(new List<GameObject>());
+        float SecondChunkCenter = ChunkSize * 1.85f;
 
-            //if (!SecondRow)
-            //    SecondRow = true;
-            //else
-            //    SecondRow = false;
+        tempPos = new List<Vector2>();
+        tempPos.Add(FlatToWorld(0, 0));
+        goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[0].x, 1.0f, tempPos[0].y), new Quaternion(), this.transform);
+        goDaddy.GetComponent<MeshRenderer>().enabled = false;
+        goDaddy.transform.Rotate(new Vector3(0, 0, 0));
 
-            /*
-                var x = size * 3f/2f * hex.col
-                var y = size * Mathf.Sqrt(3f) * (hex.row + 0.5f * (hex.col & 1)) 
-             
-             */
+        CreateHexegon(0,tempPos[0]);
 
-            for (int z = 0; z < (int)GridSize.y; z++)
-            {
-                Cell[x].Add(Instantiate(TilePrefab));
-
-                //if (SecondRow)
-                //    Cell[x][z].transform.position = new Vector3(((x) - ((int)GridSize.x)) * 0.5f, 0, ((z + 0.5f) - ((int)GridSize.y / 2)) * 1.75f);
-                //else
-                //    Cell[x][z].transform.position = new Vector3(((x) - ((int)GridSize.x)) * 0.5f , 0, (z - ((int)GridSize.y / 2)) * 1.75f);
-
-                float scale = .57f;
-
-                var lx = scale * Mathf.Sqrt(3f) * (z + 0.5f * (x & 1));
-                var lz = scale * 3f / 2f * x;
-
-
-                Cell[x][z].transform.position = new Vector3(lx, 0, lz);
-
-
-                Cell[x][z].transform.localScale = new Vector3(1, 1, 1);
-
-                Cell[x][z].GetComponent<CellBehaviour>().SetTileProperties(x, z);
-
-            }
-        }
-
-        Noise = new float[Cell.Count, Cell[0].Count];
-
-        GenerateNoise();
+        //Cell.Add(new List<GameObject>());
+        //tempPos.Add(FlatToWorld((int)SecondChunkCenter, 0));
+        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[1].x, 1.0f, tempPos[1].y), new Quaternion(), this.transform);
+        //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
+        //
+        //CreateHexegon(1,tempPos[1]);
+        //
+        //Cell.Add(new List<GameObject>());
+        //tempPos.Add(FlatToWorld((int)SecondChunkCenter, (int)-SecondChunkCenter));
+        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[2].x, 1.0f, tempPos[2].y), new Quaternion(), this.transform);
+        //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
+        //
+        //CreateHexegon(2,tempPos[2]);
+        //
+        //Cell.Add(new List<GameObject>());
+        //tempPos.Add(FlatToWorld(0, (int)SecondChunkCenter));
+        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[3].x, 1.0f, tempPos[3].y), new Quaternion(), this.transform);
+        //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
+        //
+        //CreateHexegon(3,tempPos[3]);
+        //
+        //Cell.Add(new List<GameObject>());
+        //tempPos.Add(FlatToWorld((int)-SecondChunkCenter, (int)SecondChunkCenter));
+        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[4].x, 1.0f, tempPos[4].y), new Quaternion(), this.transform);
+        //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
+        //
+        //CreateHexegon(4,tempPos[4]);
+        //
+        //Cell.Add(new List<GameObject>());
+        //tempPos.Add(FlatToWorld((int)-SecondChunkCenter, 0));
+        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[5].x, 1.0f, tempPos[5].y), new Quaternion(), this.transform);
+        //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
+        //
+        //
+        //CreateHexegon(5,tempPos[5]);
+        //
+        //Cell.Add(new List<GameObject>());
+        //tempPos.Add(FlatToWorld(0, (int)-SecondChunkCenter));
+        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[6].x, 1.0f, tempPos[6].y), new Quaternion(), this.transform);
+        //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
+        //
+        //CreateHexegon(6,tempPos[6]);
     }
 
-    void GenerateNoise()
+    void CreateHexegon(int index,Vector2 OffSet)
     {
-            RandomNumber += 0.05f;
-        for (int i = 0; i < RepeatAmount; i++)
+        for (int q = -ChunkSize; q <= ChunkSize; q++)
         {
-            for (int x = 0; x < Cell.Count; x++)
+            int r1 = Mathf.Max(-ChunkSize, -q - ChunkSize);
+            int r2 = Mathf.Min(ChunkSize, -q + ChunkSize);
+
+            for (int r = r1; r <= r2; r++)
             {
-                for (int z = 0; z < Cell[x].Count; z++)
-                {
-                    if (i == 1)
-                        Noise[x, z] = Mathf.PerlinNoise(((float)x * Freqancy + RandomNumber) / 2, (float)z * Freqancy + RandomNumber);
-                    else
-                        Noise[x, z] += Mathf.PingPong( Mathf.PerlinNoise(((float)x * Freqancy + (RandomNumber + (i * 2))) / 2, (float)z * Freqancy + (RandomNumber + (i * 2))),1);
-                }
+                CreateCell(index,q, r, OffSet);
             }
         }
     }
 
+    private void CreateCell(int index, int R, int Q,Vector2 offset)
+    {
+        int posR = R;
+        int posQ = Q;
 
+        GameObject go = Instantiate(TilePrefab);
+        go.transform.parent = goDaddy.transform;
+        Cell[index].Add(go);
+
+        Vector2 tempPos = AxialToWorld(Q, R, offset);
+
+        go.transform.position = new Vector3(tempPos.x, 0, tempPos.y);
+        go.transform.localScale = new Vector3(1, 1, 1);
+        go.GetComponent<CellBehaviour>().TilePostition = new Vector2(posR, posQ);
+    }
+
+    Vector2 AxialToWorld(int q, int r, Vector2 offset)
+    {
+        var x = scale * (Mathf.Sqrt(3f) * q + Mathf.Sqrt(3f) / 2f * r) + offset.x;
+        var y = scale * (3.0f / 2f * r) + offset.y;
+        return new Vector2(x, y);
+    }
+
+    Vector2 FlatToWorld(int q, int r)
+    {
+        var x = scale * (3.0f/ 2f * q);
+        var y = scale * (Mathf.Sqrt(3f) / 2f * q + Mathf.Sqrt(3f) * r);
+        return new Vector2(x, y);
+    }
     private void Update()
     {
         timer += Time.deltaTime * 5.0f;
@@ -92,14 +127,20 @@ public class SpawnGrid : MonoBehaviour
 
         if (Input.GetMouseButton(0) && timer > 0.2f)
         {
-            GenerateNoise();
-            for (int x = 0; x < Cell.Count; x++)
+            RandomNumber += 0.05f;
+            for (int i = 0; i < Cell.Count; i++)
             {
-                for (int z = 0; z < Cell[x].Count; z++)
-                {
-                    Cell[x][z].transform.localScale = new Vector3(1, Noise[x, z], 1);
 
-                    Cell[x][z].GetComponent<CellBehaviour>().SetTileProperties(x, z);
+                foreach (GameObject g in Cell[i])
+                {
+                    CellBehaviour behaviour = g.GetComponent<CellBehaviour>();
+                    Vector2 pos = AxialToWorld((int)behaviour.TilePostition.x, (int)behaviour.TilePostition.y, tempPos[i]);
+
+                    float Noise = Mathf.PerlinNoise((pos.x * Freqancy + RandomNumber) / 2, pos.y * Freqancy + RandomNumber);
+
+                    g.transform.localScale = new Vector3(1, Noise, 1);
+
+                    behaviour.SetTileProperties();
                 }
             }
 

@@ -10,9 +10,8 @@ public class CellBehaviour : MonoBehaviour
     public Vector2 TilePostition;
     public GameObject[] Neighbours;
 
-    public void SetTileProperties(int x, int z)
+    public void SetTileProperties()
     {
-        TilePostition = new Vector2(x, z);
 
         if (gameObject.transform.localScale.y > 0.8f)
         {
