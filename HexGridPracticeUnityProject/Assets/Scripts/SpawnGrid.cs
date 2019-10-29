@@ -3,165 +3,230 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class SpawnGrid : MonoBehaviour
 {
+    // Tile Mesh
+    public GameObject TilePrefab;
+
+    // Hex Directions
     int[,] axial_directions = new int[6, 2] {
-        {+1, 0}, {+1, -1}, {0, -1},
-        {-1, 0}, {-1, +1}, {0, +1}
+        {2, -1}, {1, -2}, {-1, -1},
+        {-2, 1}, {-1, 2}, {1, 1}
     };
 
-    public GameObject TilePrefab;
-    public List<List<GameObject>> Cell;
-    float timer = 0.0f;
-    float[,] Noise;
-    float scale = .57f;
-    public int RepeatAmount = 2;
-    public float RandomNumber;
-    public int ChunkSize = 2;
-    public float Freqancy = 0.01f;
-    GameObject goDaddy;
-    List <Vector2> tempPos;
+    // Hex Storage
+    public List<List<GameObject>> goCell;
+    public CellBehaviour[][] Cell;
+    int CellArrayIndex = 0;
+
+    // Hex Properties
+    float HexScale = .57f;
+    public int GridSize = 2;
+    public int DectectionRadius = 10;
+
+    // Noise Properties
+    public float[][] BiomeHeat;
+    public float[][] BiomeHumidity;
+
+    // Terrain Noise
+    public float TerrainRandNum;
+    public float TerrainFrequancy = 0.01f;
+
+    // Biome Noise
+    public float BiomeRandNum;
+    public float BiomeFrequancy = 0.01f;
+
+    // Temp Variables
+    float UpdateTimer = 0.0f;
+
     void Start()
     {
-        RandomNumber = UnityEngine.Random.value;
+        goCell = new List<List<GameObject>>();
+        CreateHexagon();
 
-        Cell = new List<List<GameObject>>();
-        Cell.Add(new List<GameObject>());
+        Cell = new CellBehaviour[GridSize * 2 + 1][];
 
-        float SecondChunkCenter = ChunkSize * 2f;
-
-        for(int i = 0; i < 6; ++i)
+        for (int q = 0; q < GridSize * 2 + 1; q++)
         {
-            var offsetx = axial_directions[i, 0];
-            var offsety = axial_directions[i, 1];
+            Cell[q] = new CellBehaviour[goCell[q].Count];
 
-            tempPos = new List<Vector2>();
-
-            tempPos.Add(FlatToWorld((int)SecondChunkCenter * offsetx, (int)SecondChunkCenter * offsety));
-
-            goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[0].x, 1.0f, tempPos[0].y), new Quaternion(), this.transform);
-
-            goDaddy.GetComponent<MeshRenderer>().enabled = false;
-            //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
-
-            Createegon(i, tempPos[0]);
+            for (int r = 0; r < goCell[q].Count; r++)
+            {
+                Cell[q][r] = goCell[q][r].GetComponent<CellBehaviour>();
+            }
         }
 
-        
-
-
-        //Cell.Add(new List<GameObject>());
-        //tempPos.Add(FlatToWorld((int)SecondChunkCenter, 0));
-        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[1].x, 1.0f, tempPos[1].y), new Quaternion(), this.transform);
-        //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
-        
-        //Createegon(1,tempPos[1]);
-        
-        //Cell.Add(new List<GameObject>());
-        //tempPos.Add(FlatToWorld((int)SecondChunkCenter, (int)-SecondChunkCenter));
-        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[2].x, 1.0f, tempPos[2].y), new Quaternion(), this.transform);
-        //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
-        
-        //Createegon(2,tempPos[2]);
-        
-        //Cell.Add(new List<GameObject>());
-        //tempPos.Add(FlatToWorld(0, (int)SecondChunkCenter));
-        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[3].x, 1.0f, tempPos[3].y), new Quaternion(), this.transform);
-        //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
-        
-        //Createegon(3,tempPos[3]);
-        
-        //Cell.Add(new List<GameObject>());
-        //tempPos.Add(FlatToWorld((int)-SecondChunkCenter, (int)SecondChunkCenter));
-        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[4].x, 1.0f, tempPos[4].y), new Quaternion(), this.transform);
-        //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
-        
-        //Createegon(4,tempPos[4]);
-        
-        //Cell.Add(new List<GameObject>());
-        //tempPos.Add(FlatToWorld((int)-SecondChunkCenter, 0));
-        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[5].x, 1.0f, tempPos[5].y), new Quaternion(), this.transform);
-        //goDaddy.transform.Rotate(new Vector3(0, 3, 0));
-        
-        
-        //Createegon(5,tempPos[5]);
-        
-        //Cell.Add(new List<GameObject>());
-        //tempPos.Add(FlatToWorld(0, (int)-SecondChunkCenter));
-        //goDaddy = Instantiate(TilePrefab, new Vector3(tempPos[6].x, 1.0f, tempPos[6].y), new Quaternion(), this.transform);
-        //goDaddy.transform.Rotate(new Vector3(0, 0, 0));
-        
-        //Createegon(6,tempPos[6]);
+        GenerateTerrain();
     }
 
-    void Createegon(int index, Vector2 OffSet)
+    void GenerateMainTerrainPerlinNoise()
     {
-        for (int q = -ChunkSize; q <= ChunkSize; q++)
+
+        for (int q = 0; q < GridSize * 2 + 1; q++)
         {
-            int r1 = Mathf.Max(-ChunkSize, -q - ChunkSize);
-            int r2 = Mathf.Min(ChunkSize, -q + ChunkSize);
+            for (int r = 0; r < goCell[q].Count; r++)
+            {
+                    Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
+
+                    float Noise = Mathf.PerlinNoise((pos.x * TerrainFrequancy + TerrainRandNum) / 2, pos.y * TerrainFrequancy + TerrainRandNum);
+
+                    Cell[q][r].transform.localScale = new Vector3(1, Noise, 1);
+
+                    Cell[q][r].SetTileProperties(BiomeHeat[q][r], BiomeHumidity[q][r]);
+            }
+        }
+    }
+
+    // Biome Generator
+    void GenerateBiomePerlinNoise()
+    {
+        BiomeHeat = new float[GridSize * 2 + 1][];
+        BiomeHumidity = new float[GridSize * 2 + 1][];
+        for (int q = 0; q < GridSize * 2 + 1; q++)
+        {
+            BiomeHeat[q] = new float[goCell[q].Count];
+            BiomeHumidity[q] = new float[goCell[q].Count];
+            for (int r = 0; r < goCell[q].Count; r++)
+            {
+                Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
+                BiomeHeat[q][r] = Mathf.PerlinNoise((pos.x * BiomeFrequancy + BiomeRandNum) / 2, pos.y * BiomeFrequancy + BiomeRandNum);
+                BiomeHumidity[q][r] = Mathf.PerlinNoise((pos.x * BiomeFrequancy + (BiomeRandNum * 1.5f)) / 2, pos.y * BiomeFrequancy + (BiomeRandNum * 1.5f));
+            }
+        }
+    }
+
+    void GenerateTerrain()
+    {
+        TerrainRandNum = UnityEngine.Random.Range(0, 99999);
+        BiomeRandNum = UnityEngine.Random.Range(0, 99999);
+
+        GenerateBiomePerlinNoise();
+        GenerateMainTerrainPerlinNoise();
+    }
+
+
+    private void Update()
+    {
+        UpdateTimer += Time.deltaTime * 10;
+        if (Input.GetMouseButtonUp(0) || UpdateTimer > 1)
+        {
+            TerrainRandNum += 0.05f;
+            BiomeRandNum -= 0.05f;
+            GenerateBiomePerlinNoise();
+            GenerateMainTerrainPerlinNoise();
+            UpdateTimer = 0.0f;
+        }    
+    }
+
+    //----------------------
+    //  HEX FUNCTIONS
+    //----------------------
+
+    void CreateHexagon()
+    {
+        for (int q = -GridSize; q <= GridSize; q++)
+        {
+            goCell.Add(new List<GameObject>());
+
+            int r1 = Mathf.Max(-GridSize, -q - GridSize);
+            int r2 = Mathf.Min(GridSize, -q + GridSize);
 
             for (int r = r1; r <= r2; r++)
             {
-                CreateCell(index,q, r, OffSet);
+                CreateCell(q, r);
             }
+            CellArrayIndex++;
         }
     }
 
-    private void CreateCell(int index, int R, int Q,Vector2 offset)
+    private void CreateCell(int Q, int R)
     {
-        int posR = R;
-        int posQ = Q;
+        float posQ = AxialFlatToWorld(Q, R).y;
+        float posR = AxialFlatToWorld(Q, R).x;
 
         GameObject go = Instantiate(TilePrefab);
-        go.transform.parent = goDaddy.transform;
-        Cell[index].Add(go);
+        go.name = Q + ", " + R;
 
-        Vector2 tempPos = AxialToWorld(Q, R, offset);
-
-        go.transform.position = new Vector3(tempPos.x, 0, tempPos.y);
+        go.transform.position = new Vector3(posQ, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);
-        go.GetComponent<CellBehaviour>().TilePostition = new Vector2(posR, posQ);
+        go.GetComponent<CellBehaviour>().TilePostition = new Vector2(Q, R);
+
+        goCell[CellArrayIndex].Add(go);
     }
 
-    Vector2 AxialToWorld(int q, int r, Vector2 offset)
+    Vector2 AxialFlatToWorld(int q, int r)
     {
-        var x = scale * (Mathf.Sqrt(3f) * q + Mathf.Sqrt(3f) / 2f * r) + offset.x;
-        var y = scale * (3.0f / 2f * r) + offset.y;
+        var x = HexScale * (3.0f / 2f * q);
+        var y = HexScale * (Mathf.Sqrt(3f) / 2f * q + (Mathf.Sqrt(3f) * r));
+
         return new Vector2(x, y);
     }
 
-    Vector2 FlatToWorld(int q, int r)
+    Vector2 AxialPointToWorld(int q, int r)
     {
-        var x = scale * (3.0f/ 2f * q);
-        var y = scale * (Mathf.Sqrt(3f) / 2f * q + Mathf.Sqrt(3f) * r);
+        var x = HexScale * (Mathf.Sqrt(3f) * q + Mathf.Sqrt(3f) / 2f * r);
+        var y = HexScale * (3.0f / 2f * r);
+
         return new Vector2(x, y);
     }
-    private void Update()
+
+    Vector3 axial_to_cube(Vector2 Hex)
     {
-        timer += Time.deltaTime * 5.0f;
+        var x = Hex.x;
+        var z = Hex.y;
+        var y = -x - z;
+        return new Vector3(x, y, z);
+    }
 
+    float cube_distance(Vector3 HexOne, Vector3 HexTwo)
+    {
+        return Mathf.Max(Mathf.Abs(HexOne.x - HexTwo.x), Mathf.Abs(HexOne.y - HexTwo.y), Mathf.Abs(HexOne.z - HexTwo.z));
+    }
 
-        if (Input.GetMouseButton(0) && timer > 0.1f)
+    float HexDistance(Vector2 HexOne, Vector2 HexTwo)
+    {
+        Vector3 ac = axial_to_cube(HexOne);
+        Vector3 bc = axial_to_cube(HexTwo);
+        return cube_distance(ac, bc);
+    }
+
+    CellBehaviour GetCellByPos(int x, int y)
+    {
+        for (int q = 0; q < GridSize * 2 + 1; q++)
         {
-            RandomNumber += 0.05f;
-            for (int i = 0; i < Cell.Count; i++)
+            for (int r = 0; r < goCell[q].Count; r++)
             {
-
-                foreach (GameObject g in Cell[i])
+                if (Cell[q][r].TilePostition.x == x && Cell[q][r].TilePostition.y == y)
                 {
-                    CellBehaviour behaviour = g.GetComponent<CellBehaviour>();
-                    Vector2 pos = AxialToWorld((int)behaviour.TilePostition.x, (int)behaviour.TilePostition.y, tempPos[i]);
-
-                    float Noise = Mathf.PerlinNoise((pos.x * Freqancy + RandomNumber) / 2, pos.y * Freqancy + RandomNumber);
-
-                    g.transform.localScale = new Vector3(1, Noise, 1);
-
-                    behaviour.SetTileProperties();
+                    return Cell[q][r];
                 }
             }
-
-            timer = 0.0f;
         }
+        return null;
     }
+
+    Vector2 CubeToAxiel(Vector3 cube)
+    {
+        var q = cube.x;
+        var r = cube.z;
+        return new Vector2(q, r);
+    }
+
+    Vector2 RotateCellRight(Vector2 cellPos, Vector3 C, int i)
+    {
+        Vector3 P = axial_to_cube(cellPos);
+        Vector3 PFromC = P - C;
+        Vector3 RFromC = new Vector3();
+
+        float x = PFromC.x * -1;
+        float y = PFromC.y * -1;
+        float z = PFromC.z * -1;
+
+        RFromC = new Vector3(z, x, y);
+
+        Vector3 R = RFromC + C;
+        return CubeToAxiel(R);
+    }
+
 }

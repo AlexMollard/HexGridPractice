@@ -157,10 +157,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TilePrefab: {fileID: 8513100193643531655, guid: ab68b45dadf43ed43816422a1a9712c7,
     type: 3}
-  RepeatAmount: 2
-  RandomNumber: 0
-  ChunkSize: 5
-  Freqancy: 0.05
+  GridSize: 80
+  DectectionRadius: 10
+  TerrainRandNum: 0
+  TerrainFrequancy: 0.1
+  BiomeRandNum: 100
+  BiomeFrequancy: 0.05
 --- !u!1 &1687258581
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +213,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 75
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -237,8 +239,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1687258581}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 30, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 120, z: 0}
+  m_LocalScale: {x: 1, y: 0, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0

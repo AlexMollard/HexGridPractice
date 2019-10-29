@@ -91,10 +91,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CellMaterial:
-  - {fileID: 2100000, guid: e68b024c490e7114db30549a6a36d213, type: 2}
-  - {fileID: 2100000, guid: ea6e97b772959b043a1b02e46b20b15f, type: 2}
-  - {fileID: 2100000, guid: bebb74b073935d84f8fe767c051b341d, type: 2}
-  - {fileID: 2100000, guid: fd5dcdcf76331fd4d9eaef375c2ceeed, type: 2}
   - {fileID: 2100000, guid: e35995ef658ecf94b8c51655bbe01bb3, type: 2}
+  - {fileID: 2100000, guid: fd5dcdcf76331fd4d9eaef375c2ceeed, type: 2}
+  - {fileID: 2100000, guid: d37cdf98bed91a14181b7c5f996adbb1, type: 2}
+  - {fileID: 2100000, guid: cb5afca9f92b3e94a9ecf219a86b88a1, type: 2}
+  - {fileID: 2100000, guid: bebb74b073935d84f8fe767c051b341d, type: 2}
+  - {fileID: 2100000, guid: ea6e97b772959b043a1b02e46b20b15f, type: 2}
+  - {fileID: 2100000, guid: e68b024c490e7114db30549a6a36d213, type: 2}
+  - {fileID: 2100000, guid: 849af7e53cef6a2448b8694330d51bfd, type: 2}
+  - {fileID: 2100000, guid: 340fac052b02e2b4295a9e210ccb01f6, type: 2}
+  - {fileID: 2100000, guid: cf1c137eab79efc4cb73b9816373d5a7, type: 2}
+  - {fileID: 2100000, guid: 40a937377d4f6c44d8839065a8d087c9, type: 2}
+  TileType: 0
+  TileBiome: 6
   TilePostition: {x: 0, y: 0}
   Neighbours: []
+  heat: 0
+  humidity: 0
