@@ -26,7 +26,6 @@ public class SpawnGrid : MonoBehaviour
     public int DectectionRadius = 10;
 
     // Noise Properties
-    public float[][] BiomeHeat;
     public float[][] BiomeHumidity;
 
     // Terrain Noise
@@ -39,6 +38,7 @@ public class SpawnGrid : MonoBehaviour
 
     // Temp Variables
     float UpdateTimer = 0.0f;
+    public float PowValue = 1.02f;
 
     void Start()
     {
@@ -67,13 +67,16 @@ public class SpawnGrid : MonoBehaviour
         {
             for (int r = 0; r < goCell[q].Count; r++)
             {
-                    Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
+                Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
 
-                    float Noise = Mathf.PerlinNoise((pos.x * TerrainFrequancy + TerrainRandNum) / 2, pos.y * TerrainFrequancy + TerrainRandNum);
+                float Noise =  Mathf.PerlinNoise((pos.x * TerrainFrequancy + TerrainRandNum), pos.y * TerrainFrequancy + TerrainRandNum);
+                Noise += 0.5f * Mathf.PerlinNoise((2 * pos.x * TerrainFrequancy + TerrainRandNum), 2 * pos.y * TerrainFrequancy + TerrainRandNum);
+                Noise += 0.25f * Mathf.PerlinNoise((4 * pos.x * TerrainFrequancy + TerrainRandNum), 4 * pos.y * TerrainFrequancy + TerrainRandNum);
 
-                    Cell[q][r].transform.localScale = new Vector3(1, Noise, 1);
+                Noise = Mathf.Pow(Noise, PowValue);
+                Cell[q][r].transform.localScale = new Vector3(1, Noise, 1);
 
-                    Cell[q][r].SetTileProperties(BiomeHeat[q][r], BiomeHumidity[q][r]);
+                Cell[q][r].SetTileProperties(Noise, BiomeHumidity[q][r]);
             }
         }
     }
@@ -81,17 +84,14 @@ public class SpawnGrid : MonoBehaviour
     // Biome Generator
     void GenerateBiomePerlinNoise()
     {
-        BiomeHeat = new float[GridSize * 2 + 1][];
         BiomeHumidity = new float[GridSize * 2 + 1][];
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {
-            BiomeHeat[q] = new float[goCell[q].Count];
             BiomeHumidity[q] = new float[goCell[q].Count];
             for (int r = 0; r < goCell[q].Count; r++)
             {
                 Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
-                BiomeHeat[q][r] = Mathf.PerlinNoise((pos.x * BiomeFrequancy + BiomeRandNum) / 2, pos.y * BiomeFrequancy + BiomeRandNum);
-                BiomeHumidity[q][r] = Mathf.PerlinNoise((pos.x * BiomeFrequancy + (BiomeRandNum * 1.5f)) / 2, pos.y * BiomeFrequancy + (BiomeRandNum * 1.5f));
+                BiomeHumidity[q][r] = Mathf.PerlinNoise((pos.x * BiomeFrequancy + (TerrainRandNum)) , pos.y * BiomeFrequancy + (TerrainRandNum));
             }
         }
     }
@@ -109,12 +109,10 @@ public class SpawnGrid : MonoBehaviour
     private void Update()
     {
         UpdateTimer += Time.deltaTime * 10;
-        if (Input.GetMouseButtonUp(0) || UpdateTimer > 1)
+        if (Input.GetMouseButtonUp(0))
         {
-            TerrainRandNum += 0.05f;
-            BiomeRandNum -= 0.05f;
-            GenerateBiomePerlinNoise();
-            GenerateMainTerrainPerlinNoise();
+            GenerateTerrain();
+
             UpdateTimer = 0.0f;
         }    
     }

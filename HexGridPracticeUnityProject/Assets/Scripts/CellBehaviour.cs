@@ -5,51 +5,82 @@ using UnityEngine;
 public class CellBehaviour : MonoBehaviour
 {
 
-    BiomeType[,] BiomeTable = new BiomeType[7, 7] {   
-    //COLDEST           //COLDER           //COLD             //HOT                  //HOTTER               //HOTTEST              //HOTTEST
-    { BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Plains,  BiomeType.Desert,      BiomeType.Desert,      BiomeType.Desert    ,  BiomeType.Desert     },     //DRYEST
-    { BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Plains,  BiomeType.Desert,      BiomeType.Desert,      BiomeType.Desert    ,  BiomeType.Desert     },     //DRYER
-    { BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Forest,  BiomeType.Forest,      BiomeType.Savanna,     BiomeType.Savanna   ,  BiomeType.Savanna    },     //DRY
-    { BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Forest,  BiomeType.Forest,      BiomeType.Savanna,     BiomeType.Savanna   ,  BiomeType.Savanna    },     //WET
-    { BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Taiga,   BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest },     //WETTER
-    { BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Taiga,   BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest },      //WETTEST
-    { BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Taiga,   BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest }      //WETTEST
-    };
+    //BiomeType[,] BiomeTable = new BiomeType[7, 7] {   
+    ////COLDEST           //COLDER           //COLD             //HOT                  //HOTTER               //HOTTEST              //HOTTEST
+    //{ BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Plains,  BiomeType.Desert,      BiomeType.Desert,      BiomeType.Desert    ,  BiomeType.Desert     },     //DRYEST
+    //{ BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Plains,  BiomeType.Desert,      BiomeType.Desert,      BiomeType.Desert    ,  BiomeType.Desert     },     //DRYER
+    //{ BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Forest,  BiomeType.Forest,      BiomeType.Savanna,     BiomeType.Savanna   ,  BiomeType.Savanna    },     //DRY
+    //{ BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Forest,  BiomeType.Forest,      BiomeType.Savanna,     BiomeType.Savanna   ,  BiomeType.Savanna    },     //WET
+    //{ BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Taiga,   BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest },     //WETTER
+    //{ BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Taiga,   BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest },      //WETTEST
+    //{ BiomeType.Ice,  BiomeType.Tundra,  BiomeType.Taiga,   BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest,  BiomeType.RainForest }      //WETTEST
+    //};
 
     public Material[] CellMaterial;
-    public enum CellType { Water, Sand, RedSand, Dirt, Grass, Stone, Snow, Ice, DarkGrass, LightStone, DarkSand}
-    public enum BiomeType {Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Ice}
+    public enum CellType  { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert }
+    public enum BiomeType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert }
     public CellType TileType;
     public BiomeType TileBiome = BiomeType.Plains;
     public Vector2 TilePostition;
     public GameObject[] Neighbours;
-    public float heat;
+    public float Altitude;
     public float humidity;
-    public void SetTileProperties(float Heat, float Humidity)
+    public void SetTileProperties(float Altitude, float Humidity)
     {
-        SetBiome(Heat,Humidity);
+        SetBiome(Altitude, Humidity);
         AssignType();
 
     }
 
-    void SetBiome(float Heat, float Humidity)
+    void SetBiome(float Altitude, float Humidity)
     {
-        TileBiome = GetBiomeType(Heat, Humidity);
+        TileBiome = GetBiomeType(Altitude, Humidity);
     }
 
-    BiomeType GetBiomeType(float Heat, float Humidity)
+    BiomeType GetBiomeType(float Altitude, float Humidity)
     {
-       Heat += transform.localScale.y / 10;
-       //Heat /= 2;
-       //Humidity /= 2;
-       Heat *= 10;
-       Humidity *= 10;
+        //Heat += transform.localScale.y / 10;
+        //Heat /= 2;
+        //Humidity /= 2;
+        //Heat *= 10;
+        //Humidity *= 10;
+        //
+        // heat = Heat;
+        // humidity = Humidity;
+        // Heat = Mathf.Clamp(Heat, 0, 6);
+        // Humidity = Mathf.Clamp(Humidity, 0, 6);
+        // return BiomeTable[(int)Humidity, (int)Heat];
 
-        heat = Heat;
-        humidity = Humidity;
-        Heat = Mathf.Clamp(Heat, 0, 6);
-        Humidity = Mathf.Clamp(Humidity, 0, 6);
-        return BiomeTable[(int)Humidity, (int)Heat];
+        if (Altitude < 0.1) return BiomeType.Ocean;
+        if (Altitude < 0.12) return BiomeType.Beach;
+
+        if (Altitude > 0.8)
+        {
+            if (Humidity < 0.1) return BiomeType.Scorched;
+            if (Humidity < 0.2) return BiomeType.Bare;
+            if (Humidity < 0.5) return BiomeType.Tundra;
+            return BiomeType.Snow;
+        }
+
+        if (Altitude > 0.6)
+        {
+            if (Humidity < 0.33) return BiomeType.Desert;
+            if (Humidity < 0.66) return BiomeType.Savanna;
+            return BiomeType.Taiga;
+        }
+
+        if (Altitude > 0.3)
+        {
+            if (Humidity < 0.16) return BiomeType.Desert;
+            if (Humidity < 0.50) return BiomeType.Plains;
+            if (Humidity < 0.83) return BiomeType.Forest;
+            return BiomeType.HotRainForest;
+        }
+
+        if (Humidity < 0.16) return BiomeType.WetDesert;
+        if (Humidity < 0.33) return BiomeType.Plains;
+        if (Humidity < 0.66) return BiomeType.Forest;
+        return BiomeType.RainForest;
     }
 
 
@@ -57,282 +88,86 @@ public class CellBehaviour : MonoBehaviour
     {
         if (TileBiome == BiomeType.Taiga)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.Snow;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Snow];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.Stone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Stone];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.DarkGrass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkGrass];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.Grass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Grass];
-            }
-            else
-            {
-                TileType = CellType.Water;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Water];
-            }
-            return;
+            TileType = CellType.Taiga;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Taiga];
         }
 
-        if (TileBiome == BiomeType.Savanna)
+        else if (TileBiome == BiomeType.Savanna)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.Dirt;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Dirt];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.Sand;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Sand];
-            }
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.RedSand;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.RedSand];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.DarkGrass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkGrass];
-            }
-            else
-            {
-                TileType = CellType.Stone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Stone];
-            }
-            return;
+            TileType = CellType.Savanna;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Savanna];
         }
 
-        if (TileBiome == BiomeType.Tundra)
+        else if (TileBiome == BiomeType.Tundra)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.Snow;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Snow];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.Stone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Stone];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.Grass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Grass];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.Ice;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Ice];
-            }
-            else
-            {
-                TileType = CellType.Water;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Water];
-            }
-            return;
+            TileType = CellType.Tundra;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Tundra];
         }
 
-        if (TileBiome == BiomeType.RainForest)
+        else if(TileBiome == BiomeType.RainForest)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.Stone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Stone];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.DarkGrass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkGrass];
-            }
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.Grass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Grass];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.DarkGrass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkGrass];
-            }
-            else
-            {
-                TileType = CellType.Water;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Water];
-            }
-            return;
+            TileType = CellType.RainForest;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.RainForest];
         }
 
-        if (TileBiome == BiomeType.Desert)
+        else if(TileBiome == BiomeType.Desert)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.Sand;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Sand];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.DarkSand;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkSand];                          
-            }   
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.Sand;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Sand];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.DarkSand;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkSand];
-            }
-            else
-            {
-                TileType = CellType.Dirt;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Dirt];
-            }
-            return;
+            TileType = CellType.Desert;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Desert];
         }
 
-        if (TileBiome == BiomeType.Forest)
+        else if(TileBiome == BiomeType.Forest)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.Stone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Stone];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.DarkGrass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkGrass];
-            }
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.Grass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Grass];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.Stone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Stone];
-            }
-            else
-            {
-                TileType = CellType.Water;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Water];
-            }
-            return;
+            TileType = CellType.Forest;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Forest];
         }
 
-        if (TileBiome == BiomeType.Plains)
+        else if(TileBiome == BiomeType.Plains)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.DarkGrass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkGrass];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.Grass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Grass];
-            }
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.Grass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Grass];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.DarkGrass;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.DarkGrass];
-            }
-            else
-            {
-                TileType = CellType.Water;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Water];
-            }
-            return;
+            TileType = CellType.Plains;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Plains];
         }
 
-        if (TileBiome == BiomeType.Ice)
+        else if(TileBiome == BiomeType.Snow)
         {
-            if (transform.localScale.y > 0.65f)
-            {
-                TileType = CellType.Snow;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Snow];
-            }
-            else if (transform.localScale.y > 0.5f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else if (transform.localScale.y > 0.45f)
-            {
-                TileType = CellType.Snow;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Snow];
-            }
-            else if (transform.localScale.y > 0.3f)
-            {
-                TileType = CellType.Snow;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Snow];
-            }
-            else if (transform.localScale.y > 0.2f)
-            {
-                TileType = CellType.LightStone;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.LightStone];
-            }
-            else
-            {
-                TileType = CellType.Ice;
-                GetComponent<Renderer>().material = CellMaterial[(int)CellType.Ice];
-            }
-            return;
+            TileType = CellType.Snow;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Snow];
+        }
+
+        else if(TileBiome == BiomeType.Ocean)
+        {
+            TileType = CellType.Ocean;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Ocean];
+        }
+
+        else if(TileBiome == BiomeType.Beach)
+        {
+            TileType = CellType.Beach;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Beach];
+        }
+
+        else if(TileBiome == BiomeType.Bare)
+        {
+            TileType = CellType.Bare;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Bare];
+        }
+
+        else if(TileBiome == BiomeType.Scorched)
+        {
+            TileType = CellType.Scorched;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Scorched];
+        }
+
+        else if(TileBiome == BiomeType.HotRainForest)
+        {
+            TileType = CellType.HotRainForest;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.HotRainForest];
+        }
+
+        else if(TileBiome == BiomeType.WetDesert)
+        {
+            TileType = CellType.WetDesert;
+            GetComponent<Renderer>().material = CellMaterial[(int)CellType.WetDesert];
         }
 
     }

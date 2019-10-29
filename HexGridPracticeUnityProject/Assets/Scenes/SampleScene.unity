@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 2138677392}
-  m_IndirectSpecularColor: {r: 0.28521842, g: 0.37109092, b: 0.49175987, a: 1}
+  m_IndirectSpecularColor: {r: 0.28521815, g: 0.37109026, b: 0.49175882, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -157,12 +157,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TilePrefab: {fileID: 8513100193643531655, guid: ab68b45dadf43ed43816422a1a9712c7,
     type: 3}
-  GridSize: 80
+  GridSize: 40
   DectectionRadius: 10
-  TerrainRandNum: 0
-  TerrainFrequancy: 0.1
-  BiomeRandNum: 100
-  BiomeFrequancy: 0.05
+  TerrainRandNum: 8102
+  TerrainFrequancy: 0.02
+  BiomeRandNum: 94849
+  BiomeFrequancy: 0.08
+  PowValue: 5
 --- !u!1 &1687258581
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,7 +240,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1687258581}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 120, z: 0}
+  m_LocalPosition: {x: 0, y: 65, z: 0}
   m_LocalScale: {x: 1, y: 0, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
