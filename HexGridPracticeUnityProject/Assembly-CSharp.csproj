@@ -60,6 +60,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\ButtonManager.cs" />
+    <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\CellBehaviour.cs" />
     <Compile Include="Assets\Scripts\SpawnGrid.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />

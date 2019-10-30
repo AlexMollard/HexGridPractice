@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class SpawnGrid : MonoBehaviour
 {
@@ -37,11 +38,15 @@ public class SpawnGrid : MonoBehaviour
     public float BiomeFrequancy = 0.01f;
 
     // Temp Variables
-    float UpdateTimer = 0.0f;
     public float PowValue = 1.02f;
+    public Button regenButton;
+    public Button menuButton;
+    public Text tileDisplay;
 
     void Start()
     {
+        regenButton.onClick.AddListener(GenerateTerrain);
+        menuButton.onClick.AddListener(MainMenu);
         goCell = new List<List<GameObject>>();
         CreateHexagon();
 
@@ -74,7 +79,7 @@ public class SpawnGrid : MonoBehaviour
                 Noise += 0.25f * Mathf.PerlinNoise((4 * pos.x * TerrainFrequancy + TerrainRandNum), 4 * pos.y * TerrainFrequancy + TerrainRandNum);
 
                 Noise = Mathf.Pow(Noise, PowValue);
-                Cell[q][r].transform.localScale = new Vector3(1, Noise, 1);
+                //Cell[q][r].transform.localScale = new Vector3(1, Noise, 1);
 
                 Cell[q][r].SetTileProperties(Noise, BiomeHumidity[q][r]);
             }
@@ -100,21 +105,20 @@ public class SpawnGrid : MonoBehaviour
     {
         TerrainRandNum = UnityEngine.Random.Range(0, 99999);
         BiomeRandNum = UnityEngine.Random.Range(0, 99999);
+        //TerrainRandNum += 0.5f * Time.deltaTime;
+        //BiomeRandNum += 0.5f * Time.deltaTime;
 
         GenerateBiomePerlinNoise();
         GenerateMainTerrainPerlinNoise();
     }
 
-
-    private void Update()
+    public void SetText(string inputText)
     {
-        UpdateTimer += Time.deltaTime * 10;
-        if (Input.GetMouseButtonUp(0))
-        {
-            GenerateTerrain();
-
-            UpdateTimer = 0.0f;
-        }    
+        tileDisplay.text = inputText;
+    }
+    void MainMenu()
+    {
+        SceneManager.LoadSceneAsync(0);
     }
 
     //----------------------
@@ -145,7 +149,7 @@ public class SpawnGrid : MonoBehaviour
 
         GameObject go = Instantiate(TilePrefab);
         go.name = Q + ", " + R;
-
+        go.transform.parent = transform;
         go.transform.position = new Vector3(posQ, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);
         go.GetComponent<CellBehaviour>().TilePostition = new Vector2(Q, R);
