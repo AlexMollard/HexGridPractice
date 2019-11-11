@@ -18,6 +18,7 @@ public class SpawnGrid : MonoBehaviour
 
     // Hex Storage
     public List<List<GameObject>> goCell;
+    public List<List<GameObject>> CellByType;
     public CellBehaviour[][] Cell;
     int CellArrayIndex = 0;
 
@@ -42,6 +43,21 @@ public class SpawnGrid : MonoBehaviour
     public Button regenButton;
     public Button menuButton;
     public Text tileDisplay;
+    public List<GameObject> SnowTrees;
+    public List<GameObject> Trees;
+
+    public void Awake()
+    {
+        SnowTrees = new List<GameObject>();
+        Trees = new List<GameObject>();
+        CellByType = new List<List<GameObject>>();
+
+
+        for (int i = 0; i < 16; i++)
+        {
+            CellByType.Add(new List<GameObject>());
+        }
+    }
 
     void Start()
     {
@@ -79,9 +95,9 @@ public class SpawnGrid : MonoBehaviour
                 Noise += 0.25f * Mathf.PerlinNoise((4 * pos.x * TerrainFrequancy + TerrainRandNum), 4 * pos.y * TerrainFrequancy + TerrainRandNum);
 
                 Noise = Mathf.Pow(Noise, PowValue);
-                //Cell[q][r].transform.localScale = new Vector3(1, Noise, 1);
 
                 Cell[q][r].SetTileProperties(Noise, BiomeHumidity[q][r]);
+                CellByType[(int)Cell[q][r].TileBiome].Add(goCell[q][r]);
             }
         }
     }
@@ -110,6 +126,36 @@ public class SpawnGrid : MonoBehaviour
 
         GenerateBiomePerlinNoise();
         GenerateMainTerrainPerlinNoise();
+
+
+        for (int i = 0; i < CellByType.Count; i++)
+        {
+            CellBehaviour TempCellBehaviour = new CellBehaviour();
+            MeshFilter[] meshFilters = new MeshFilter[CellByType[i].Count];
+            CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+            GameObject newChunk = new GameObject();
+            for (int z = 0; z < CellByType[i].Count; z++)
+            {
+                meshFilters[z] = CellByType[i][z].GetComponent<MeshFilter>();
+            }
+
+
+            int x = 0;
+            while (x < meshFilters.Length)
+            {
+                combine[x].mesh = meshFilters[x].sharedMesh;
+                combine[x].transform = meshFilters[x].transform.localToWorldMatrix;
+                CellByType[i][x].GetComponent<MeshRenderer>().enabled = false;
+                x++;
+            }
+            newChunk.AddComponent<MeshFilter>();
+            newChunk.AddComponent<MeshRenderer>();
+            newChunk.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+            newChunk.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+            newChunk.transform.name = System.Convert.ToString(i);
+            newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
+            newChunk.transform.gameObject.SetActive(true);
+        }
     }
 
     public void SetText(string inputText)
@@ -148,7 +194,6 @@ public class SpawnGrid : MonoBehaviour
         float posR = AxialFlatToWorld(Q, R).x;
 
         GameObject go = Instantiate(TilePrefab);
-        go.name = Q + ", " + R;
         go.transform.parent = transform;
         go.transform.position = new Vector3(posQ, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);

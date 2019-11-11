@@ -107,6 +107,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5b897964e465aef4884d830c4ddf405d, type: 2}
   - {fileID: 2100000, guid: 345ff7858dfb6f3429e47d7e5401a51b, type: 2}
   - {fileID: 2100000, guid: dde43f4c2f68f8d4ebf7acb626c3a33c, type: 2}
+  - {fileID: 2100000, guid: 660b3f44318ec3749ad3f6c9f562847c, type: 2}
   TileHeight: []
   TileType: 0
   TileBiome: 0
@@ -114,6 +115,13 @@ MonoBehaviour:
   Neighbours: []
   altitude: 0
   humidity: 0
+  Selected: 0
+  defaultColor: {r: 0, g: 0, b: 0, a: 0}
+  Tree: {fileID: 100000, guid: 962d84d10cb358740be1eefe26df77de, type: 3}
+  Stone: {fileID: 5153390580538698469, guid: 7b30abf6ae3b1234994a58973b40a4ae, type: 3}
+  TreeMat: {fileID: 2100000, guid: aa30ca5449691a34b85504a1fcc07506, type: 2}
+  SnowTreeMat: {fileID: 2100000, guid: 24979fe43574f9d4a9318cf3c91141ee, type: 2}
+  StoneMat: {fileID: 2100000, guid: ea6e97b772959b043a1b02e46b20b15f, type: 2}
 --- !u!64 &2173435111494287600
 MeshCollider:
   m_ObjectHideFlags: 0
