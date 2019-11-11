@@ -130,7 +130,7 @@ public class SpawnGrid : MonoBehaviour
 
         for (int i = 0; i < CellByType.Count; i++)
         {
-            CellBehaviour TempCellBehaviour = new CellBehaviour();
+           // CellBehaviour TempCellBehaviour = new CellBehaviour();
             MeshFilter[] meshFilters = new MeshFilter[CellByType[i].Count];
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
             GameObject newChunk = new GameObject();
@@ -152,7 +152,7 @@ public class SpawnGrid : MonoBehaviour
             newChunk.AddComponent<MeshRenderer>();
             newChunk.transform.GetComponent<MeshFilter>().mesh = new Mesh();
             newChunk.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-            newChunk.transform.name = System.Convert.ToString(i);
+            newChunk.transform.name = System.Convert.ToString((CellBehaviour.CellType)i);
             newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
             newChunk.transform.gameObject.SetActive(true);
         }

@@ -242,7 +242,7 @@ public class CellBehaviour : MonoBehaviour
             {
                 Destroy(placeholderObject);
             }
-            MeshFilter[] meshFilters = new MeshFilter[TreeAmount * 2];
+            MeshFilter[] meshFilters = new MeshFilter[TreeAmount];
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
             placeholderObject = new GameObject();
             for (int i = 0; i < TreeAmount; i++)
@@ -283,7 +283,7 @@ public class CellBehaviour : MonoBehaviour
             {
                 Destroy(placeholderObject);
             }
-            MeshFilter[] meshFilters = new MeshFilter[StoneAmount * 2];
+            MeshFilter[] meshFilters = new MeshFilter[StoneAmount];
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
             placeholderObject = new GameObject();
             for (int i = 0; i < StoneAmount; i++)
