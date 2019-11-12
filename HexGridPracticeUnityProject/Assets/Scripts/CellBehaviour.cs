@@ -1,26 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class CellBehaviour : MonoBehaviour
 {
-    public Material[] CellMaterial;
+    // Enums
     public enum CellType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
     public enum BiomeType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
-    public float[] TileHeight;
-    public CellType TileType;
-    public BiomeType TileBiome = BiomeType.Plains;
+
+
+    [Header("Tile Properties")]
     public Vector2 TilePostition;
-    public float altitude;
-    public float humidity;
-    public bool Selected;
-    public Color defaultColor;
-    public GameObject Tree;
-    public GameObject Stone;
-    public Material TreeMat;
-    public Material SnowTreeMat;
-    public Material StoneMat;
-    GameObject placeholderObject;
+    float altitude;
+    float humidity;
+    bool Selected;
+    float[] TileHeight;
+    CellType TileType;
+    public BiomeType TileBiome = BiomeType.Plains;
+    public Material[] CellMaterial;
+
+    [Header("Tile Decorations")]
+    public GameObject[] Trees;
+    public GameObject[] Stones;
+    public Material[] TreeMats;
+    public Material[] StoneMats;
+    GameObject TreeHolderObject;
+    GameObject StoneHolderObject;
     List<GameObject> TempObjects;
     int StoneAmount;
     int TreeAmount;
@@ -93,6 +99,9 @@ public class CellBehaviour : MonoBehaviour
             TileType = CellType.Taiga;
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.Taiga];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
+            HasSnow = true;
+            HasTrees = true;
+            TreeAmount = Random.Range(5, 15);
         }
 
         else if (TileBiome == BiomeType.Savanna)
@@ -101,7 +110,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.Savanna];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasStones = true;
-            StoneAmount = Random.Range(1, 5);
+            StoneAmount = Random.Range(3, 10);
         }
 
         else if (TileBiome == BiomeType.Tundra)
@@ -112,6 +121,8 @@ public class CellBehaviour : MonoBehaviour
             HasSnow = true;
             HasTrees = true;
             TreeAmount = Random.Range(0, 5);
+            HasStones = true;
+            StoneAmount = Random.Range(0, 5);
         }
 
         else if(TileBiome == BiomeType.RainForest)
@@ -120,7 +131,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.RainForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(1, 10);
+            TreeAmount = Random.Range(16, 30);
         }
 
         else if(TileBiome == BiomeType.Desert)
@@ -138,7 +149,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.Forest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(1, 5);
+            TreeAmount = Random.Range(5, 15);
         }
 
         else if(TileBiome == BiomeType.Plains)
@@ -147,7 +158,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.Plains];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(0, 3);
+            TreeAmount = Random.Range(0, 4);
         }
 
         else if(TileBiome == BiomeType.Snow)
@@ -158,6 +169,7 @@ public class CellBehaviour : MonoBehaviour
             HasSnow = true;
             HasTrees = true;
             TreeAmount = Random.Range(0, 2);
+
         }
 
         else if(TileBiome == BiomeType.Ocean)
@@ -190,7 +202,8 @@ public class CellBehaviour : MonoBehaviour
             TileType = CellType.Scorched;
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.Scorched];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
-
+            HasStones = true;
+            StoneAmount = Random.Range(4, 10);
         }
 
         else if(TileBiome == BiomeType.HotRainForest)
@@ -199,7 +212,8 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.HotRainForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(1, 6);
+            TreeAmount = Random.Range(6, 20);
+
         }
 
         else if(TileBiome == BiomeType.WetDesert)
@@ -217,7 +231,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.TropSeasonForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(1, 8);
+            TreeAmount = Random.Range(10, 30);
         }
 
         else if (TileBiome == BiomeType.DeepOcean)
@@ -230,24 +244,65 @@ public class CellBehaviour : MonoBehaviour
 
         transform.name = System.Convert.ToString(TileBiome);
 
-
         if (HasTrees && TreeAmount > 0)
         {
-            if (TreeAmount > 1)
+            if (TreeHolderObject)
             {
-                TreeAmount /= 2;
+                Destroy(TreeHolderObject);
             }
 
-            if (placeholderObject)
-            {
-                Destroy(placeholderObject);
-            }
             MeshFilter[] meshFilters = new MeshFilter[TreeAmount];
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-            placeholderObject = new GameObject();
+            TreeHolderObject = new GameObject();
+            this.gameObject.AddComponent<MeshCollider>();
+            List<Vector3> TreeTempPoses = new List<Vector3>();
+
             for (int i = 0; i < TreeAmount; i++)
             {
-                GameObject tree = Instantiate(Tree, new Vector3(transform.position.x + (Random.Range(-1, 1) * Random.value) / 2.5f, transform.localScale.y / 5, transform.position.z + (Random.Range(-1, 1) * Random.value) / 2.5f), new Quaternion(0, Random.Range(0, 180), 0, 0));
+                GameObject tree = Instantiate(Trees[0]);
+
+                tree.AddComponent<MeshCollider>();
+                RaycastHit hit;
+                bool Placed = false;
+                while (!Placed)
+                {
+                    float a = Random.value * 2 * Mathf.PI;
+                    float r = Mathf.Sqrt(Random.value);
+
+                    float x = r * Mathf.Cos(a);
+                    float z = r * Mathf.Sin(a);
+
+                    tree.transform.position = new Vector3(transform.position.x + x, transform.localScale.y / 4, transform.position.z + z);
+                    if (Physics.Raycast(tree.transform.position, -tree.transform.up, out hit, 30f))
+                    {
+                        if (hit.transform.gameObject == gameObject)
+                        {
+                            if (TreeTempPoses.Count > 0)
+                            {
+                                bool isSafe = false;
+                                for (int p = 0; p < TreeTempPoses.Count; p++)
+                                {
+                                    if (Vector3.Distance(TreeTempPoses[p], tree.transform.position) > 0.05f)
+                                    {
+                                        if (p == TreeTempPoses.Count - 1)
+                                        {
+                                            isSafe = true;
+                                        }
+                                        continue;
+                                    }
+                                    else
+                                        break;
+                                }
+                                if (isSafe)
+                                    Placed = true;
+                            }
+                            else
+                                Placed = true;
+                        }
+                    }
+                }
+                TreeTempPoses.Add(tree.transform.position);
+                tree.transform.position = new Vector3(tree.transform.position.x, transform.localScale.y / 5, tree.transform.position.z);
 
                 meshFilters[i] = tree.GetComponentInChildren<MeshFilter>();
                 combine[i].mesh = meshFilters[i].sharedMesh;
@@ -257,38 +312,88 @@ public class CellBehaviour : MonoBehaviour
                 tree.transform.localScale = new Vector3(1, 1, 1);
                 TempObjects.Add(tree);
             }
-            placeholderObject.AddComponent<MeshFilter>();
-            placeholderObject.AddComponent<MeshRenderer>();
-            placeholderObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
-            placeholderObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+            TreeHolderObject.AddComponent<MeshFilter>();
+            TreeHolderObject.AddComponent<MeshRenderer>();
+            TreeHolderObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+            TreeHolderObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
 
             if (HasSnow)
-                placeholderObject.GetComponent<MeshRenderer>().material = SnowTreeMat;
+                TreeHolderObject.GetComponent<MeshRenderer>().material = TreeMats[1];
             else
-                placeholderObject.GetComponent<MeshRenderer>().material = TreeMat;
+                TreeHolderObject.GetComponent<MeshRenderer>().material = TreeMats[0];
 
 
-            placeholderObject.transform.SetParent(transform);
-            placeholderObject.transform.name = "Trees";
-            placeholderObject.transform.gameObject.SetActive(true);
+            TreeHolderObject.transform.SetParent(transform);
+            TreeHolderObject.transform.name = "Trees";
+            TreeHolderObject.transform.gameObject.SetActive(true);
             for (int i = 0; i < TempObjects.Count; i++)
             {
                 Destroy(TempObjects[i]);
             }
             TempObjects.Clear();
         }
-        else if (HasStones && StoneAmount > 0)
+        if (HasStones && StoneAmount > 0)
         {
-            if (placeholderObject)
+            if (StoneHolderObject)
             {
-                Destroy(placeholderObject);
+                Destroy(StoneHolderObject);
             }
             MeshFilter[] meshFilters = new MeshFilter[StoneAmount];
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-            placeholderObject = new GameObject();
+            StoneHolderObject = new GameObject();
+            this.gameObject.AddComponent<MeshCollider>();
+            List<Vector3> StoneTempPoses = new List<Vector3>();
             for (int i = 0; i < StoneAmount; i++)
             {
-                GameObject stone = Instantiate(Stone, new Vector3(transform.position.x + (Random.Range(-1, 1) * Random.value) / 2.5f, transform.localScale.y / 5, transform.position.z + (Random.Range(-1, 1) * Random.value) / 2.5f), new Quaternion(0, Random.Range(0, 180), 0, 0));
+                GameObject stone = Instantiate(Stones[0], new Vector3(transform.position.x + (Random.Range(-1, 1) * Random.value) / 2.5f, transform.localScale.y / 5, transform.position.z + (Random.Range(-1, 1) * Random.value) / 2.5f), new Quaternion(0, Random.Range(0, 180), 0, 0));
+
+
+                stone.AddComponent<MeshCollider>();
+                RaycastHit hit;
+                bool Placed = false;
+                while (!Placed)
+                {
+                    float a = Random.value * 2 * Mathf.PI;
+                    float r = Mathf.Sqrt(Random.value);
+
+                    float x = r * Mathf.Cos(a);
+                    float z = r * Mathf.Sin(a);
+
+                    stone.transform.position = new Vector3(transform.position.x + x, transform.localScale.y / 4, transform.position.z + z);
+                    if (Physics.Raycast(stone.transform.position, -stone.transform.up, out hit, 30f))
+                    {
+                        if (hit.transform.gameObject == gameObject)
+                        {
+                            if (StoneTempPoses.Count > 0)
+                            {
+                                bool isSafe = false;
+                                for (int p = 0; p < StoneTempPoses.Count; p++)
+                                {
+                                    if (Vector3.Distance(StoneTempPoses[p], stone.transform.position) > 0.05f)
+                                    {
+                                        if (p == StoneTempPoses.Count - 1)
+                                        {
+                                            isSafe = true;
+                                        }
+                                        continue;
+                                    }
+                                    else
+                                        break;
+                                }
+                                if (isSafe)
+                                    Placed = true;
+                            }
+                            else
+                                Placed = true;
+                        }
+                    }
+                }
+                StoneTempPoses.Add(stone.transform.position);
+                stone.transform.position = new Vector3(stone.transform.position.x, transform.localScale.y / 5, stone.transform.position.z);
+
+
+
+
 
                 meshFilters[i] = stone.GetComponentInChildren<MeshFilter>();
                 combine[i].mesh = meshFilters[i].sharedMesh;
@@ -299,14 +404,14 @@ public class CellBehaviour : MonoBehaviour
                 TempObjects.Add(stone);
             }
 
-            placeholderObject.AddComponent<MeshFilter>();
-            placeholderObject.AddComponent<MeshRenderer>();
-            placeholderObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
-            placeholderObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-            placeholderObject.GetComponent<MeshRenderer>().material = StoneMat;
-            placeholderObject.transform.SetParent(transform);
-            placeholderObject.transform.name = "Stones";
-            placeholderObject.transform.gameObject.SetActive(true);
+            StoneHolderObject.AddComponent<MeshFilter>();
+            StoneHolderObject.AddComponent<MeshRenderer>();
+            StoneHolderObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+            StoneHolderObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+            StoneHolderObject.GetComponent<MeshRenderer>().material = StoneMats[0];
+            StoneHolderObject.transform.SetParent(transform);
+            StoneHolderObject.transform.name = "Stones";
+            StoneHolderObject.transform.gameObject.SetActive(true);
 
 
             for (int i = 0; i < TempObjects.Count; i++)
@@ -315,9 +420,13 @@ public class CellBehaviour : MonoBehaviour
             }
             TempObjects.Clear();
         }
-        else if (placeholderObject)
+        if (TreeHolderObject && !HasTrees)
         {
-            Destroy(placeholderObject);
+            Destroy(TreeHolderObject);
+        }
+        if (StoneHolderObject && !HasStones)
+        {
+            Destroy(StoneHolderObject);
         }
     }
 
@@ -328,8 +437,6 @@ public class CellBehaviour : MonoBehaviour
             if (!Selected)
             {
                 transform.GetComponentInParent<SpawnGrid>().SetText("Biome: " + TileType);
-                transform.localScale = new Vector3(1f, transform.localScale.y * 1.25f, 1f);
-                defaultColor = GetComponent<Renderer>().material.color;
                 GetComponent<Renderer>().material.color -= new Color(0.5f * GetComponent<Renderer>().material.color.r, 0.5f * GetComponent<Renderer>().material.color.g, 0.5f * GetComponent<Renderer>().material.color.b); ;
             }
         Selected = true;
@@ -338,11 +445,8 @@ public class CellBehaviour : MonoBehaviour
 
     private void OnMouseExit()
     {
-        if (Selected)
-        {
-            GetComponent<Renderer>().material.color = defaultColor;
-        }
         Selected = false;
-        //AssignType();
     }
+
+    
 }

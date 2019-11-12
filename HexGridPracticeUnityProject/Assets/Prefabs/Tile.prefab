@@ -78,7 +78,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8513100193643531655}
-  m_Mesh: {fileID: 4300000, guid: ac4a5a9e24f3efa44b8f02171e9eefda, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 4b569879128d71646b67b639ed6040ed, type: 3}
 --- !u!114 &8513100193643531659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,6 +91,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83f9cfccfd71ce544af6d15fb0d2afb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TilePostition: {x: 0, y: 0}
+  TileBiome: 0
   CellMaterial:
   - {fileID: 2100000, guid: cf1c137eab79efc4cb73b9816373d5a7, type: 2}
   - {fileID: 2100000, guid: 40a937377d4f6c44d8839065a8d087c9, type: 2}
@@ -108,20 +110,15 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 345ff7858dfb6f3429e47d7e5401a51b, type: 2}
   - {fileID: 2100000, guid: dde43f4c2f68f8d4ebf7acb626c3a33c, type: 2}
   - {fileID: 2100000, guid: 660b3f44318ec3749ad3f6c9f562847c, type: 2}
-  TileHeight: []
-  TileType: 0
-  TileBiome: 0
-  TilePostition: {x: 0, y: 0}
-  Neighbours: []
-  altitude: 0
-  humidity: 0
-  Selected: 0
-  defaultColor: {r: 0, g: 0, b: 0, a: 0}
-  Tree: {fileID: 100000, guid: 962d84d10cb358740be1eefe26df77de, type: 3}
-  Stone: {fileID: 5153390580538698469, guid: 7b30abf6ae3b1234994a58973b40a4ae, type: 3}
-  TreeMat: {fileID: 2100000, guid: aa30ca5449691a34b85504a1fcc07506, type: 2}
-  SnowTreeMat: {fileID: 2100000, guid: 24979fe43574f9d4a9318cf3c91141ee, type: 2}
-  StoneMat: {fileID: 2100000, guid: ea6e97b772959b043a1b02e46b20b15f, type: 2}
+  Trees:
+  - {fileID: 100000, guid: 641d995988d1b964ba826913512f77c2, type: 3}
+  Stones:
+  - {fileID: 100000, guid: 87d6f93e4676bf945a4ab23ea6feb811, type: 3}
+  TreeMats:
+  - {fileID: 2100000, guid: aa30ca5449691a34b85504a1fcc07506, type: 2}
+  - {fileID: 2100000, guid: 24979fe43574f9d4a9318cf3c91141ee, type: 2}
+  StoneMats:
+  - {fileID: 2100000, guid: 87251316bb3fe6b4a88441463406397a, type: 2}
 --- !u!64 &2173435111494287600
 MeshCollider:
   m_ObjectHideFlags: 0

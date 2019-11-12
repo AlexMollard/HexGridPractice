@@ -8,6 +8,7 @@ public class CameraController : MonoBehaviour
     public Camera mainCamera;
     public Slider ZoomSlider;
     public int speed = 4;
+    public float PCspeed = 1.0f;
     public float MINSCALE = 2.0F;
     public float MAXSCALE = 5.0F;
     public float minPinchSpeed = 5.0F;
@@ -21,11 +22,6 @@ public class CameraController : MonoBehaviour
     public float moveSpeedTouch = 1.0F;
     public float dragSpeed = 2;
     private Vector3 dragOrigin;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -54,10 +50,40 @@ public class CameraController : MonoBehaviour
         
             }
         }
-        
+        else
+        {
+            GetPCInput();
+        }
+
         // Slider Zoom
         mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, ZoomSlider.value, mainCamera.transform.position.z);
+
     }
+
+
+    void GetPCInput()
+    {
+        if (Input.GetKey(KeyCode.W))
+        {
+            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y, mainCamera.transform.position.z + PCspeed);
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y, mainCamera.transform.position.z - PCspeed);
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x + PCspeed, mainCamera.transform.position.y, mainCamera.transform.position.z);
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x - PCspeed, mainCamera.transform.position.y, mainCamera.transform.position.z);
+        }
+    }
+
 
 
 }

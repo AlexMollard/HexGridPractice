@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class SpawnGrid : MonoBehaviour
 {
@@ -25,24 +26,22 @@ public class SpawnGrid : MonoBehaviour
     // Hex Properties
     float HexScale = .57f;
     public int GridSize = 2;
-    public int DectectionRadius = 10;
 
     // Noise Properties
     public float[][] BiomeHumidity;
 
     // Terrain Noise
-    public float TerrainRandNum;
-    public float TerrainFrequancy = 0.01f;
+    float TerrainRandNum;
+    float TerrainFrequancy = 0.03f;
 
     // Biome Noise
-    public float BiomeRandNum;
-    public float BiomeFrequancy = 0.01f;
+    float BiomeRandNum;
+    float BiomeFrequancy = 0.15f;
 
     // Temp Variables
-    public float PowValue = 1.02f;
-    public Button regenButton;
+    public float PowValue = 6f;
     public Button menuButton;
-    public Text tileDisplay;
+    public TextMeshProUGUI tileDisplay;
     public List<GameObject> SnowTrees;
     public List<GameObject> Trees;
 
@@ -61,7 +60,6 @@ public class SpawnGrid : MonoBehaviour
 
     void Start()
     {
-        regenButton.onClick.AddListener(GenerateTerrain);
         menuButton.onClick.AddListener(MainMenu);
         goCell = new List<List<GameObject>>();
         CreateHexagon();
@@ -130,31 +128,34 @@ public class SpawnGrid : MonoBehaviour
 
         for (int i = 0; i < CellByType.Count; i++)
         {
-           // CellBehaviour TempCellBehaviour = new CellBehaviour();
-            MeshFilter[] meshFilters = new MeshFilter[CellByType[i].Count];
-            CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-            GameObject newChunk = new GameObject();
-            for (int z = 0; z < CellByType[i].Count; z++)
+            if (CellByType[i].Count > 0)
             {
-                meshFilters[z] = CellByType[i][z].GetComponent<MeshFilter>();
-            }
+                // CellBehaviour TempCellBehaviour = new CellBehaviour();
+                MeshFilter[] meshFilters = new MeshFilter[CellByType[i].Count];
+                CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+                GameObject newChunk = new GameObject();
+                for (int z = 0; z < CellByType[i].Count; z++)
+                {
+                    meshFilters[z] = CellByType[i][z].GetComponent<MeshFilter>();
+                }
 
 
-            int x = 0;
-            while (x < meshFilters.Length)
-            {
-                combine[x].mesh = meshFilters[x].sharedMesh;
-                combine[x].transform = meshFilters[x].transform.localToWorldMatrix;
-                CellByType[i][x].GetComponent<MeshRenderer>().enabled = false;
-                x++;
+                int x = 0;
+                while (x < meshFilters.Length)
+                {
+                    combine[x].mesh = meshFilters[x].sharedMesh;
+                    combine[x].transform = meshFilters[x].transform.localToWorldMatrix;
+                    CellByType[i][x].GetComponent<MeshRenderer>().enabled = false;
+                    x++;
+                }
+                newChunk.AddComponent<MeshFilter>();
+                newChunk.AddComponent<MeshRenderer>();
+                newChunk.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+                newChunk.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+                newChunk.transform.name = System.Convert.ToString((CellBehaviour.CellType)i);
+                newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
+                newChunk.transform.gameObject.SetActive(true);
             }
-            newChunk.AddComponent<MeshFilter>();
-            newChunk.AddComponent<MeshRenderer>();
-            newChunk.transform.GetComponent<MeshFilter>().mesh = new Mesh();
-            newChunk.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-            newChunk.transform.name = System.Convert.ToString((CellBehaviour.CellType)i);
-            newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
-            newChunk.transform.gameObject.SetActive(true);
         }
     }
 
