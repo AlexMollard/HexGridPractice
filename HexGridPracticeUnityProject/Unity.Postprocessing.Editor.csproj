@@ -287,9 +287,6 @@
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
       <HintPath>C:/Program Files/Unity 2018.3.8f1/Editor/Data/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
-      <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>C:/Users/s191067/Desktop/HexGridPractice.git/trunk/HexGridPracticeUnityProject/Library/PackageCache/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>
@@ -304,6 +301,9 @@
     </Reference>
     <Reference Include="UnityEditor.Purchasing">
       <HintPath>C:/Users/s191067/Desktop/HexGridPractice.git/trunk/HexGridPracticeUnityProject/Library/PackageCache/com.unity.purchasing@2.0.3/Editor/UnityEditor.Purchasing.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>C:/Program Files/Unity 2018.3.8f1/Editor/Data/PlaybackEngines/iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
@@ -757,6 +757,8 @@
     <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\Bloom.shader" />
     <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\Copy.shader" />
     <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\CopyStd.shader" />
+    <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\CopyStdFromDoubleWide.shader" />
+    <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\CopyStdFromTexArray.shader" />
     <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\DeferredFog.shader" />
     <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\DepthOfField.hlsl" />
     <None Include="Packages\com.unity.postprocessing\PostProcessing\Shaders\Builtins\DepthOfField.shader" />

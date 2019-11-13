@@ -22,6 +22,17 @@ public class CameraController : MonoBehaviour
     public float moveSpeedTouch = 1.0F;
     public float dragSpeed = 2;
     private Vector3 dragOrigin;
+    public float PCdragSpeed = 2;
+    private Vector3 PCdragOrigin;
+    Rigidbody RB;
+    float moveSpeedPC = 0.0f;
+    public float ZoomAmount = 0.0f;
+    public float ZoomSpeed = 40.0f;
+
+    private void Start()
+    {
+        RB = GetComponent<Rigidbody>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -42,12 +53,11 @@ public class CameraController : MonoBehaviour
         
             if ((touchDelta + varianceInDistances <= 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed))
             {
-                ZoomSlider.value += (1 * speed);
+                mainCamera.transform.Translate(Vector3.forward * (ZoomSpeed * (mainCamera.transform.position.y / 50)) * Time.deltaTime);
             }
             if ((touchDelta + varianceInDistances > 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed))
             {
-                ZoomSlider.value -= (1 * speed);
-        
+                mainCamera.transform.Translate(Vector3.forward * -ZoomSpeed * Time.deltaTime);
             }
         }
         else
@@ -55,33 +65,48 @@ public class CameraController : MonoBehaviour
             GetPCInput();
         }
 
-        // Slider Zoom
-        mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, ZoomSlider.value, mainCamera.transform.position.z);
 
     }
 
 
     void GetPCInput()
     {
+        if (Input.GetKey(KeyCode.LeftShift))
+            moveSpeedPC = PCspeed * 2 * Time.deltaTime;
+        else
+            moveSpeedPC = PCspeed * Time.deltaTime;
+
         if (Input.GetKey(KeyCode.W))
         {
-            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y, mainCamera.transform.position.z + PCspeed);
+            RB.velocity = new Vector3(RB.velocity.x, RB.velocity.y, RB.velocity.z + moveSpeedPC);
         }
 
         if (Input.GetKey(KeyCode.S))
         {
-            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, mainCamera.transform.position.y, mainCamera.transform.position.z - PCspeed);
+            RB.velocity = new Vector3(RB.velocity.x, RB.velocity.y, RB.velocity.z - moveSpeedPC);
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x + PCspeed, mainCamera.transform.position.y, mainCamera.transform.position.z);
+            RB.velocity = new Vector3(RB.velocity.x + moveSpeedPC, RB.velocity.y, RB.velocity.z);
         }
 
         if (Input.GetKey(KeyCode.A))
         {
-            mainCamera.transform.position = new Vector3(mainCamera.transform.position.x - PCspeed, mainCamera.transform.position.y, mainCamera.transform.position.z);
+            RB.velocity = new Vector3(RB.velocity.x - moveSpeedPC, RB.velocity.y, RB.velocity.z) ;
         }
+
+        if (Input.mouseScrollDelta.y > 0 && mainCamera.transform.position.y > 5f)
+        {
+            mainCamera.transform.Translate(Vector3.forward * (ZoomSpeed * (mainCamera.transform.position.y / 50)) * Time.deltaTime);
+            ZoomAmount += ZoomSpeed * Time.deltaTime;
+        }
+        else if (Input.mouseScrollDelta.y < 0 && mainCamera.transform.position.y < 100f)
+        {
+            mainCamera.transform.Translate(Vector3.forward * -ZoomSpeed * Time.deltaTime);
+            ZoomAmount -= ZoomSpeed * Time.deltaTime;
+        }
+
     }
 
 

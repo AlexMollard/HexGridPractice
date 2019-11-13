@@ -38,19 +38,23 @@ public class SpawnGrid : MonoBehaviour
     float BiomeRandNum;
     float BiomeFrequancy = 0.15f;
 
+    // Decoration Vaiables
+    public List<GameObject> SnowTrees;
+    public List<GameObject> Trees;
+
     // Temp Variables
     public float PowValue = 6f;
     public Button menuButton;
     public TextMeshProUGUI tileDisplay;
-    public List<GameObject> SnowTrees;
-    public List<GameObject> Trees;
-
+    int HexSize = 0;
+    int iteration = 0;
+    bool FirstOff = false;
     public void Awake()
     {
         SnowTrees = new List<GameObject>();
         Trees = new List<GameObject>();
         CellByType = new List<List<GameObject>>();
-
+        HexSize = GridSize * 2 + 1;
 
         for (int i = 0; i < 16; i++)
         {
@@ -60,6 +64,7 @@ public class SpawnGrid : MonoBehaviour
 
     void Start()
     {
+        FirstOff = false;
         menuButton.onClick.AddListener(MainMenu);
         goCell = new List<List<GameObject>>();
         CreateHexagon();
@@ -77,6 +82,88 @@ public class SpawnGrid : MonoBehaviour
         }
 
         GenerateTerrain();
+    }
+
+    private void Update()
+    {
+        if (Camera.main.transform.position.y < 18)
+        {
+            FirstOff = false;
+            iteration++;
+            if (iteration == 1)
+            {
+                for (int q = 0; q < HexSize / 6; q++)
+                {
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(true);
+                    }
+                }
+            }
+            else if (iteration == 2)
+            {
+                for (int q = (HexSize / 6) * 1; q < (HexSize / 6) * 2; q++)
+                {
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(true);
+                    }
+                }
+            }
+            else if (iteration == 3)
+            {
+                for (int q = (HexSize / 6) * 2; q < (HexSize / 6) * 3; q++)
+                {
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(true);
+                    }
+                }
+            }
+            else if (iteration == 4)
+            {
+                for (int q = (HexSize / 6) * 3; q < (HexSize / 6) * 4; q++)
+                {
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(true);
+                    }
+                }
+            }
+            else if (iteration == 5)
+            {
+                for (int q = (HexSize / 6) * 4; q < (HexSize / 6) * 5; q++)
+                {
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(true);
+                    }
+                }
+            }
+            else if (iteration == 6)
+            {
+                for (int q = (HexSize / 6) * 5; q < HexSize; q++)
+                {
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(true);
+                    }
+                }
+                iteration = 0;
+            }
+
+        }
+        else if(!FirstOff)
+        {
+                for (int q = 0; q < HexSize; q++)
+                {
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(false);
+                    }
+                }
+                FirstOff = true;
+        }
     }
 
     void GenerateMainTerrainPerlinNoise()

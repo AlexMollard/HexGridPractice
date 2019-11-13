@@ -9,6 +9,7 @@ public class CellBehaviour : MonoBehaviour
     public enum CellType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
     public enum BiomeType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
 
+    Transform tran;
 
     [Header("Tile Properties")]
     public Vector2 TilePostition;
@@ -36,6 +37,7 @@ public class CellBehaviour : MonoBehaviour
 
     public void Awake()
     {
+        tran = GetComponent<Transform>();
         TempObjects = new List<GameObject>();
         TileHeight = new float[] { 3.75f, 3.0f, 4.25f, 1.75f, 3.0f, 2.75f, 2.5f, 4.45f, 1.0f, 1.5f, 4.0f, 3.85f, 3.0f, 2.0f, 2.0f, 1.0f };
     }
@@ -101,7 +103,7 @@ public class CellBehaviour : MonoBehaviour
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasSnow = true;
             HasTrees = true;
-            TreeAmount = Random.Range(5, 15);
+            TreeAmount = Random.Range(3, 10);
         }
 
         else if (TileBiome == BiomeType.Savanna)
@@ -120,7 +122,7 @@ public class CellBehaviour : MonoBehaviour
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasSnow = true;
             HasTrees = true;
-            TreeAmount = Random.Range(0, 5);
+            TreeAmount = Random.Range(0, 3);
             HasStones = true;
             StoneAmount = Random.Range(0, 5);
         }
@@ -131,7 +133,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.RainForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(16, 30);
+            TreeAmount = Random.Range(5, 10);
         }
 
         else if(TileBiome == BiomeType.Desert)
@@ -149,7 +151,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.Forest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(5, 15);
+            TreeAmount = Random.Range(3, 7);
         }
 
         else if(TileBiome == BiomeType.Plains)
@@ -212,7 +214,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.HotRainForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(6, 20);
+            TreeAmount = Random.Range(3, 8);
 
         }
 
@@ -231,7 +233,7 @@ public class CellBehaviour : MonoBehaviour
             GetComponent<Renderer>().material = CellMaterial[(int)CellType.TropSeasonForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
-            TreeAmount = Random.Range(10, 30);
+            TreeAmount = Random.Range(5, 10);
         }
 
         else if (TileBiome == BiomeType.DeepOcean)
@@ -282,7 +284,7 @@ public class CellBehaviour : MonoBehaviour
                                 bool isSafe = false;
                                 for (int p = 0; p < TreeTempPoses.Count; p++)
                                 {
-                                    if (Vector3.Distance(TreeTempPoses[p], tree.transform.position) > 0.05f)
+                                    if (Vector3.Distance(TreeTempPoses[p], tree.transform.position) > 0.2f)
                                     {
                                         if (p == TreeTempPoses.Count - 1)
                                         {
@@ -430,23 +432,34 @@ public class CellBehaviour : MonoBehaviour
         }
     }
 
-    private void OnMouseOver()
+    public void CheckTreeVisable(bool enable)
     {
-        if (Input.touchCount == 1 && Input.GetTouch(0).phase != TouchPhase.Moved)
+        if (!enable && tran.childCount > 0)
         {
-            if (!Selected)
-            {
-                transform.GetComponentInParent<SpawnGrid>().SetText("Biome: " + TileType);
-                GetComponent<Renderer>().material.color -= new Color(0.5f * GetComponent<Renderer>().material.color.r, 0.5f * GetComponent<Renderer>().material.color.g, 0.5f * GetComponent<Renderer>().material.color.b); ;
-            }
-        Selected = true;
+            tran.GetChild(0).GetComponent<Renderer>().enabled = false;
+            if (tran.childCount > 1)
+                tran.GetChild(1).GetComponent<Renderer>().enabled = false;
         }
-    }
+        else if (tran.childCount > 0)
+        {
+            float offset = tran.localScale.y / 5;
+            Vector3 cameraview = Camera.main.WorldToViewportPoint(tran.position + new Vector3(0, offset, 0));
 
-    private void OnMouseExit()
-    {
-        Selected = false;
-    }
+            if (cameraview.x > -0.3f && cameraview.y > -0.3f && cameraview.z > 0 && cameraview.x < 1.3f && cameraview.y < 1.3f)
+            {
 
-    
+                tran.GetChild(0).GetComponent<Renderer>().enabled = true;
+                if (tran.childCount > 1)
+                    tran.GetChild(1).GetComponent<Renderer>().enabled = true;
+            }
+            else
+            {
+                tran.GetChild(0).GetComponent<Renderer>().enabled = false;
+                if (tran.childCount > 1)
+                    tran.GetChild(1).GetComponent<Renderer>().enabled = false;
+            }
+            
+        }
+
+    }
 }
