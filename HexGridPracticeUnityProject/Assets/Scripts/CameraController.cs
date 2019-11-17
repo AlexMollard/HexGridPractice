@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CameraController : MonoBehaviour
 {
@@ -28,7 +29,9 @@ public class CameraController : MonoBehaviour
     float moveSpeedPC = 0.0f;
     public float ZoomAmount = 0.0f;
     public float ZoomSpeed = 40.0f;
-
+    RaycastHit hit;
+    public TextMeshProUGUI yDebug;
+    public float MinHeight = 10.0f;
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
@@ -37,6 +40,11 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Physics.Raycast(mainCamera.transform.position, -mainCamera.transform.up, out hit, 20f))
+        {
+            MinHeight = (hit.transform.localScale.y / 5) + 2;
+        }
+
         if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             movePrevDist = (Input.GetTouch(0).deltaPosition * -1) * (moveSpeedTouch * mainCamera.transform.position.y);
@@ -53,11 +61,12 @@ public class CameraController : MonoBehaviour
         
             if ((touchDelta + varianceInDistances <= 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed))
             {
-                mainCamera.transform.Translate(Vector3.forward * (ZoomSpeed * (mainCamera.transform.position.y / 50)) * Time.deltaTime);
+                mainCamera.transform.Translate(Vector3.forward * -(ZoomSpeed + mainCamera.transform.position.y) * Time.deltaTime);
+
             }
-            if ((touchDelta + varianceInDistances > 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed))
+            if ((touchDelta + varianceInDistances > 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed) && mainCamera.transform.position.y < 100f && mainCamera.transform.position.y > MinHeight)
             {
-                mainCamera.transform.Translate(Vector3.forward * -ZoomSpeed * Time.deltaTime);
+                mainCamera.transform.Translate(Vector3.forward * (ZoomSpeed + mainCamera.transform.position.y) * Time.deltaTime);
             }
         }
         else
@@ -65,7 +74,10 @@ public class CameraController : MonoBehaviour
             GetPCInput();
         }
 
+        mainCamera.transform.position = new Vector3(Mathf.Clamp(mainCamera.transform.position.x, -40, 40), Mathf.Clamp(mainCamera.transform.position.y, MinHeight, 100), Mathf.Clamp(mainCamera.transform.position.z, -36, 30));
 
+
+        yDebug.text = "X: " + mainCamera.transform.position.x + " Y: " + mainCamera.transform.position.y + " Z: " + mainCamera.transform.position.z;
     }
 
 
@@ -96,15 +108,13 @@ public class CameraController : MonoBehaviour
             RB.velocity = new Vector3(RB.velocity.x - moveSpeedPC, RB.velocity.y, RB.velocity.z) ;
         }
 
-        if (Input.mouseScrollDelta.y > 0 && mainCamera.transform.position.y > 5f)
+        if (Input.mouseScrollDelta.y > 0 )
         {
-            mainCamera.transform.Translate(Vector3.forward * (ZoomSpeed * (mainCamera.transform.position.y / 50)) * Time.deltaTime);
-            ZoomAmount += ZoomSpeed * Time.deltaTime;
+            mainCamera.transform.Translate(Vector3.forward * (ZoomSpeed + mainCamera.transform.position.y ) * Time.deltaTime);
         }
         else if (Input.mouseScrollDelta.y < 0 && mainCamera.transform.position.y < 100f)
         {
-            mainCamera.transform.Translate(Vector3.forward * -ZoomSpeed * Time.deltaTime);
-            ZoomAmount -= ZoomSpeed * Time.deltaTime;
+            mainCamera.transform.Translate(Vector3.forward * -(ZoomSpeed + mainCamera.transform.position.y) * Time.deltaTime);
         }
 
     }
