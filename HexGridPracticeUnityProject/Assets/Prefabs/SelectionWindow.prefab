@@ -840,6 +840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Total: 0
+  cell: {fileID: 0}
   Wedges:
   - {fileID: 2990666410843483318}
   - {fileID: 2990666410599429838}
@@ -858,6 +859,10 @@ MonoBehaviour:
   - {fileID: 2990666409741027814}
   - {fileID: 2990666411240348346}
   - {fileID: 2990666411142208213}
+  Biome: {fileID: 2990666409425286475}
+  timer: 0
+  currentRotation: 0
+  BiomeText: {fileID: 2990666409600709745}
 --- !u!1 &2990666409663550081
 GameObject:
   m_ObjectHideFlags: 0

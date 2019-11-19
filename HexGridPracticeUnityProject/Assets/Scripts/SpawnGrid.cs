@@ -206,8 +206,6 @@ public class SpawnGrid : MonoBehaviour
     {
         TerrainRandNum = UnityEngine.Random.Range(0, 99999);
         BiomeRandNum = UnityEngine.Random.Range(0, 99999);
-        //TerrainRandNum += 0.5f * Time.deltaTime;
-        //BiomeRandNum += 0.5f * Time.deltaTime;
 
         GenerateBiomePerlinNoise();
         GenerateMainTerrainPerlinNoise();
@@ -239,7 +237,7 @@ public class SpawnGrid : MonoBehaviour
                 newChunk.AddComponent<MeshRenderer>();
                 newChunk.transform.GetComponent<MeshFilter>().mesh = new Mesh();
                 newChunk.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-                newChunk.transform.name = System.Convert.ToString((CellBehaviour.CellType)i);
+                newChunk.transform.name = System.Convert.ToString((CellBehaviour.BiomeType)i);
                 newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
                 newChunk.transform.gameObject.SetActive(true);
             }
@@ -286,7 +284,7 @@ public class SpawnGrid : MonoBehaviour
         go.transform.position = new Vector3(posQ, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);
         go.GetComponent<CellBehaviour>().TilePostition = new Vector2(Q, R);
-
+        go.AddComponent<MeshCollider>();
         goCell[CellArrayIndex].Add(go);
     }
 

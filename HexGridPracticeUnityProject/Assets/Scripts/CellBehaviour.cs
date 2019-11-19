@@ -5,9 +5,15 @@ using UnityEditor;
 
 public class CellBehaviour : MonoBehaviour
 {
+    public struct SmallTile
+    {
+       public ResourceType tileType;
+    }
+
     // Enums
-    public enum CellType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
     public enum BiomeType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
+
+    public enum ResourceType {Grass,Stone,Sand,Water,Trees,Ores,Animals, Other};
 
     Transform tran;
 
@@ -17,7 +23,7 @@ public class CellBehaviour : MonoBehaviour
     float humidity;
     bool Selected;
     float[] TileHeight;
-    CellType TileType;
+    BiomeType TileType;
     public BiomeType TileBiome = BiomeType.Plains;
     public Material[] CellMaterial;
 
@@ -34,18 +40,37 @@ public class CellBehaviour : MonoBehaviour
     bool HasTrees = false;
     bool HasStones = false;
     bool HasSnow = false;
-
+    public float[] TileProperties;
+    
+    // Terrain
+    public float[,] InnerTileNoise;
+    float TerrainRandNum;
+    float TerrainFrequancy = 0.03f;
+    float PowValue = 2.03f;
+    SmallTile[,] InnerTile;
+    TerrainBehavior terrain;
     public void Awake()
     {
+        TerrainRandNum = Random.Range(1, 1000);
         tran = GetComponent<Transform>();
         TempObjects = new List<GameObject>();
         TileHeight = new float[] { 3.75f, 3.0f, 4.25f, 1.75f, 3.0f, 2.75f, 2.5f, 4.45f, 1.0f, 1.5f, 4.0f, 3.85f, 3.0f, 2.0f, 2.0f, 1.0f };
+        TileProperties = new float[8];
+        PowValue = 2.0f;
+        for (int i = 0; i < TileProperties.Length; i++)
+        {
+            TileProperties[i] = 0;
+        }
+        InnerTileNoise = new float[10,10];
+        InnerTile = new SmallTile[10,10];
     }
 
     public void SetTileProperties(float Altitude, float Humidity)
     {
         SetBiome(Altitude, Humidity);
         AssignType();
+        GenerateTerrain();
+
     }
 
     void SetBiome(float Altitude, float Humidity)
@@ -98,8 +123,8 @@ public class CellBehaviour : MonoBehaviour
 
         if (TileBiome == BiomeType.Taiga)
         {
-            TileType = CellType.Taiga;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Taiga];
+            TileType = BiomeType.Taiga;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Taiga];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasSnow = true;
             HasTrees = true;
@@ -108,8 +133,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if (TileBiome == BiomeType.Savanna)
         {
-            TileType = CellType.Savanna;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Savanna];
+            TileType = BiomeType.Savanna;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Savanna];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasStones = true;
             StoneAmount = Random.Range(3, 10);
@@ -117,8 +142,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if (TileBiome == BiomeType.Tundra)
         {
-            TileType = CellType.Tundra;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Tundra];
+            TileType = BiomeType.Tundra;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Tundra];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasSnow = true;
             HasTrees = true;
@@ -129,8 +154,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.RainForest)
         {
-            TileType = CellType.RainForest;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.RainForest];
+            TileType = BiomeType.RainForest;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.RainForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
             TreeAmount = Random.Range(5, 10);
@@ -138,8 +163,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.Desert)
         {
-            TileType = CellType.Desert;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Desert];
+            TileType = BiomeType.Desert;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Desert];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasStones = true;
             StoneAmount = Random.Range(0, 5);
@@ -147,8 +172,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.Forest)
         {
-            TileType = CellType.Forest;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Forest];
+            TileType = BiomeType.Forest;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Forest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
             TreeAmount = Random.Range(3, 7);
@@ -156,8 +181,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.Plains)
         {
-            TileType = CellType.Plains;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Plains];
+            TileType = BiomeType.Plains;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Plains];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
             TreeAmount = Random.Range(0, 4);
@@ -165,8 +190,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.Snow)
         {
-            TileType = CellType.Snow;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Snow];
+            TileType = BiomeType.Snow;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Snow];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasSnow = true;
             HasTrees = true;
@@ -176,16 +201,16 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.Ocean)
         {
-            TileType = CellType.Ocean;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Ocean];
+            TileType = BiomeType.Ocean;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Ocean];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + (altitude / 4.0f), 1f);
 
         }
 
         else if(TileBiome == BiomeType.Beach)
         {
-            TileType = CellType.Beach;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Beach];
+            TileType = BiomeType.Beach;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Beach];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasStones = true;
             StoneAmount = Random.Range(0, 2);
@@ -193,16 +218,16 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.Bare)
         {
-            TileType = CellType.Bare;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Bare];
+            TileType = BiomeType.Bare;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Bare];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
 
         }
 
         else if(TileBiome == BiomeType.Scorched)
         {
-            TileType = CellType.Scorched;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.Scorched];
+            TileType = BiomeType.Scorched;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.Scorched];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasStones = true;
             StoneAmount = Random.Range(4, 10);
@@ -210,8 +235,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.HotRainForest)
         {
-            TileType = CellType.HotRainForest;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.HotRainForest];
+            TileType = BiomeType.HotRainForest;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.HotRainForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
             TreeAmount = Random.Range(3, 8);
@@ -220,8 +245,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if(TileBiome == BiomeType.WetDesert)
         {
-            TileType = CellType.WetDesert;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.WetDesert];
+            TileType = BiomeType.WetDesert;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.WetDesert];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasStones = true;
             StoneAmount = Random.Range(0, 3);
@@ -229,8 +254,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if (TileBiome == BiomeType.TropSeasonForest)
         {
-            TileType = CellType.TropSeasonForest;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.TropSeasonForest];
+            TileType = BiomeType.TropSeasonForest;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.TropSeasonForest];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + altitude, 1f);
             HasTrees = true;
             TreeAmount = Random.Range(5, 10);
@@ -238,8 +263,8 @@ public class CellBehaviour : MonoBehaviour
 
         else if (TileBiome == BiomeType.DeepOcean)
         {
-            TileType = CellType.DeepOcean;
-            GetComponent<Renderer>().material = CellMaterial[(int)CellType.DeepOcean];
+            TileType = BiomeType.DeepOcean;
+            GetComponent<Renderer>().material = CellMaterial[(int)BiomeType.DeepOcean];
             transform.localScale = new Vector3(1f, TileHeight[(int)TileType] + (altitude / 4.0f), 1f);
 
         }
@@ -252,7 +277,6 @@ public class CellBehaviour : MonoBehaviour
             {
                 Destroy(TreeHolderObject);
             }
-
             MeshFilter[] meshFilters = new MeshFilter[TreeAmount];
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
             TreeHolderObject = new GameObject();
@@ -316,6 +340,7 @@ public class CellBehaviour : MonoBehaviour
             }
             TreeHolderObject.AddComponent<MeshFilter>();
             TreeHolderObject.AddComponent<MeshRenderer>();
+            TreeHolderObject.layer = 2;
             TreeHolderObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
             TreeHolderObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
 
@@ -408,6 +433,7 @@ public class CellBehaviour : MonoBehaviour
 
             StoneHolderObject.AddComponent<MeshFilter>();
             StoneHolderObject.AddComponent<MeshRenderer>();
+            StoneHolderObject.layer = 2;
             StoneHolderObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
             StoneHolderObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
             StoneHolderObject.GetComponent<MeshRenderer>().material = StoneMats[0];
@@ -462,4 +488,59 @@ public class CellBehaviour : MonoBehaviour
         }
 
     }
+
+    public void GenerateTerrain()
+    {
+        for (int x = 0; x < 10; x++)
+        {
+            for (int y = 0; y < 10; y++)
+            {
+                float Noise = Mathf.PerlinNoise((x * TerrainFrequancy + TerrainRandNum), y * TerrainFrequancy + TerrainRandNum);
+                Noise += 0.5f * Mathf.PerlinNoise((2 * x * TerrainFrequancy + TerrainRandNum), 2 * y * TerrainFrequancy + TerrainRandNum);
+                Noise += 0.25f * Mathf.PerlinNoise((4 * x * TerrainFrequancy + TerrainRandNum), 4 * y * TerrainFrequancy + TerrainRandNum);
+
+                Noise = Mathf.Pow(Noise, PowValue);
+
+                InnerTileNoise[x, y] = Noise;
+                if (Noise < 0.1f)
+                {
+                    InnerTile[x, y].tileType = ResourceType.Water;
+                }
+                else if (Noise < 0.18f)
+                {
+                    InnerTile[x, y].tileType = ResourceType.Sand;
+                }
+                else if (Noise < 0.8f)
+                {
+                    if (Random.value > 0.2f)
+                    {
+                        InnerTile[x, y].tileType = ResourceType.Grass;
+                    }
+                    else if (Random.value > 0.4f)
+                    {
+                        InnerTile[x, y].tileType = ResourceType.Trees;
+                    }
+                    else
+                    {
+                        InnerTile[x, y].tileType = ResourceType.Animals;
+                    }
+                }
+                else
+                {
+                    if (Random.value > 0.1f)
+                    {
+                        InnerTile[x, y].tileType = ResourceType.Stone;
+                    }
+                    else
+                    {
+                        InnerTile[x, y].tileType = ResourceType.Ores;
+                    }
+                }
+                TileProperties[(int)InnerTile[x, y].tileType] += 1;
+            }
+        }
+
+    }
+
+
 }

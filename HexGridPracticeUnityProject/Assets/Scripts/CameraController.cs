@@ -32,9 +32,15 @@ public class CameraController : MonoBehaviour
     RaycastHit hit;
     public TextMeshProUGUI yDebug;
     public float MinHeight = 10.0f;
+    int layerMask;
+    public PieGraphManager Graph;
+    public GameObject InfoCanvas;
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
+        layerMask = 1 << 2;
+        layerMask = ~layerMask;
+        InfoCanvas.SetActive(false);
     }
 
     // Update is called once per frame
@@ -116,6 +122,30 @@ public class CameraController : MonoBehaviour
         {
             mainCamera.transform.Translate(Vector3.forward * -(ZoomSpeed + mainCamera.transform.position.y) * Time.deltaTime);
         }
+
+
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (!InfoCanvas.activeSelf)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, 100, layerMask))
+                {
+                    Graph.cell = hit.transform.GetComponent<CellBehaviour>();
+                    InfoCanvas.SetActive(true);
+                    Graph.UpdateChart();
+                }
+            }
+            else
+            {
+                InfoCanvas.SetActive(false);
+            }
+
+        }
+
 
     }
 
