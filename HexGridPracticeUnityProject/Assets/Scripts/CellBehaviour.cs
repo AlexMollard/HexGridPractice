@@ -15,7 +15,10 @@ public class CellBehaviour : MonoBehaviour
 
     public enum ResourceType {Grass,Stone,Sand,Water,Trees,Ores,Animals, Other};
 
-    Transform tran;
+    Transform ChildTransform;
+    Renderer TreeRend;
+    Renderer StoneRend;
+    Vector3 ChildOffset;
 
     [Header("Tile Properties")]
     public Vector2 TilePostition;
@@ -51,8 +54,9 @@ public class CellBehaviour : MonoBehaviour
     TerrainBehavior terrain;
     public void Awake()
     {
+        ChildOffset = new Vector3();
         TerrainRandNum = Random.Range(1, 1000);
-        tran = GetComponent<Transform>();
+        ChildTransform = GetComponent<Transform>();
         TempObjects = new List<GameObject>();
         TileHeight = new float[] { 3.75f, 3.0f, 4.25f, 1.75f, 3.0f, 2.75f, 2.5f, 4.45f, 1.0f, 1.5f, 4.0f, 3.85f, 3.0f, 2.0f, 2.0f, 1.0f };
         TileProperties = new float[8];
@@ -460,29 +464,38 @@ public class CellBehaviour : MonoBehaviour
 
     public void CheckTreeVisable(bool enable)
     {
-        if (!enable && tran.childCount > 0)
+        if (ChildTransform.childCount > 0)
         {
-            tran.GetChild(0).GetComponent<Renderer>().enabled = false;
-            if (tran.childCount > 1)
-                tran.GetChild(1).GetComponent<Renderer>().enabled = false;
+            TreeRend = ChildTransform.GetChild(0).GetComponent<Renderer>();
+            if (ChildTransform.childCount > 1)
+                StoneRend = ChildTransform.GetChild(1).GetComponent<Renderer>();
+
         }
-        else if (tran.childCount > 0)
+
+        if (!enable && ChildTransform.childCount > 0)
         {
-            float offset = tran.localScale.y / 5;
-            Vector3 cameraview = Camera.main.WorldToViewportPoint(tran.position + new Vector3(0, offset, 0));
+            TreeRend.enabled = false;
+            if (ChildTransform.childCount > 1)
+                StoneRend.enabled = false;
+        }
+        else if (ChildTransform.childCount > 0)
+        {
+            float offset = ChildTransform.localScale.y / 5;
+
+            Vector3 cameraview = Camera.main.WorldToViewportPoint(ChildTransform.position + new Vector3(0, offset, 0));
 
             if (cameraview.x > -0.3f && cameraview.y > -0.3f && cameraview.z > 0 && cameraview.x < 1.3f && cameraview.y < 1.3f)
             {
 
-                tran.GetChild(0).GetComponent<Renderer>().enabled = true;
-                if (tran.childCount > 1)
-                    tran.GetChild(1).GetComponent<Renderer>().enabled = true;
+                TreeRend.enabled = true;
+                if (ChildTransform.childCount > 1)
+                    StoneRend.enabled = true;
             }
             else
             {
-                tran.GetChild(0).GetComponent<Renderer>().enabled = false;
-                if (tran.childCount > 1)
-                    tran.GetChild(1).GetComponent<Renderer>().enabled = false;
+                TreeRend.enabled = false;
+                if (ChildTransform.childCount > 1)
+                    StoneRend.enabled = false;
             }
             
         }

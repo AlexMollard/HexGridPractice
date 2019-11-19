@@ -86,7 +86,7 @@ public class SpawnGrid : MonoBehaviour
 
     private void Update()
     {
-        if (Camera.main.transform.position.y < 18)
+        if (Camera.main.transform.position.y < 10)
         {
             FirstOff = false;
             iteration++;

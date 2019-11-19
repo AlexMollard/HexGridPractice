@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class CameraController : MonoBehaviour
     int layerMask;
     public PieGraphManager Graph;
     public GameObject InfoCanvas;
+    public bool InCanvas = false;
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
@@ -84,11 +86,25 @@ public class CameraController : MonoBehaviour
 
 
         yDebug.text = "X: " + mainCamera.transform.position.x + " Y: " + mainCamera.transform.position.y + " Z: " + mainCamera.transform.position.z;
+      
     }
 
 
     void GetPCInput()
     {
+        var mousePosition = Input.mousePosition;
+        if (mousePosition.x > InfoCanvas.transform.position.x - InfoCanvas.GetComponent<RectTransform>().sizeDelta.x &&
+            mousePosition.x < InfoCanvas.transform.position.x + InfoCanvas.GetComponent<RectTransform>().sizeDelta.x &&
+            mousePosition.y > InfoCanvas.transform.position.y - InfoCanvas.GetComponent<RectTransform>().sizeDelta.y &&
+            mousePosition.y < InfoCanvas.transform.position.y + InfoCanvas.GetComponent<RectTransform>().sizeDelta.y)
+        {
+            InCanvas = true;
+        }
+        else
+        {
+            InCanvas = false;
+        }
+
         if (Input.GetKey(KeyCode.LeftShift))
             moveSpeedPC = PCspeed * 2 * Time.deltaTime;
         else
@@ -127,6 +143,7 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+
             if (!InfoCanvas.activeSelf)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -139,11 +156,10 @@ public class CameraController : MonoBehaviour
                     Graph.UpdateChart();
                 }
             }
-            else
+            else if (!InCanvas)
             {
                 InfoCanvas.SetActive(false);
             }
-
         }
 
 
