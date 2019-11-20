@@ -52,11 +52,13 @@ public class SpawnGrid : MonoBehaviour
     int HexSize = 0;
     int iteration = 0;
     bool FirstOff = false;
-
+    public bool isReady = false;
+    List<GameObject> Chunks;
     float timer = 0.0f;
-
+    Vector3 startupScale;
     public void Awake()
     {
+        Chunks = new List<GameObject>();
         SnowTrees = new List<GameObject>();
         Trees = new List<GameObject>();
         CellByType = new List<List<GameObject>>();
@@ -92,7 +94,9 @@ public class SpawnGrid : MonoBehaviour
 
     private void Update()
     {
-        if (Camera.main.transform.position.y < 20)
+
+
+        if (Camera.main.transform.position.y < 20 && isReady)
         {
             FirstOff = false;
             iteration++;
@@ -159,16 +163,34 @@ public class SpawnGrid : MonoBehaviour
             }
 
         }
-        else if(!FirstOff)
+        else if (!FirstOff)
         {
-                for (int q = 0; q < HexSize; q++)
+            for (int q = 0; q < HexSize; q++)
+            {
+                for (int r = 0; r < goCell[q].Count; r++)
                 {
-                    for (int r = 0; r < goCell[q].Count; r++)
-                    {
-                        Cell[q][r].CheckTreeVisable(false);
-                    }
+                    Cell[q][r].CheckTreeVisable(false);
                 }
-                FirstOff = true;
+            }
+            FirstOff = true;
+        }
+        else
+        {
+            timer += Time.deltaTime * 0.2f;
+            startupScale = new Vector3(1, Mathf.Clamp(Mathf.Lerp(0,1,timer), 0, 1), 1);
+            for (int i = 0; i < Chunks.Count; i++)
+            {
+                Chunks[i].transform.localScale = startupScale;
+            }
+
+            if (Chunks[0].transform.localScale.y >= 1)
+            {
+                for (int i = 0; i < Chunks.Count; i++)
+                {
+                    Chunks[i].transform.localScale = new Vector3(1, 1, 1); ;
+                }
+                isReady = true;
+            }
         }
     }
 
@@ -246,6 +268,8 @@ public class SpawnGrid : MonoBehaviour
                 newChunk.transform.name = System.Convert.ToString((CellBehaviour.BiomeType)i);
                 newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
                 newChunk.transform.gameObject.SetActive(true);
+                newChunk.transform.localScale = new Vector3(1,0.0f,1);
+                Chunks.Add(newChunk);
             }
         }
     }

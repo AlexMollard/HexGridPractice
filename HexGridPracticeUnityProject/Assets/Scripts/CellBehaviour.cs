@@ -261,9 +261,9 @@ public class CellBehaviour : MonoBehaviour
         }
 
         if (TileBiome == BiomeType.DeepOcean || TileBiome == BiomeType.Ocean)
-            transform.localScale = new Vector3(1f, 1f, 1f);
+            transform.localScale = new Vector3(1f, 2.5f, 1f);
         else
-            transform.localScale = new Vector3(1f, Mathf.Lerp(1f, 50, altitude / 10.0f), 1f);
+            transform.localScale = new Vector3(1f, Mathf.Lerp(1f, 75f, altitude / 7.5f), 1f);
        
 
         transform.name = System.Convert.ToString(TileBiome);
