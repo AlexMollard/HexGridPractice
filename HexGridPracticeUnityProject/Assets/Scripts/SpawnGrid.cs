@@ -32,23 +32,29 @@ public class SpawnGrid : MonoBehaviour
 
     // Terrain Noise
     float TerrainRandNum;
-    float TerrainFrequancy = 0.03f;
+    public float TerrainFrequancy = 0.03f;
 
     // Biome Noise
     float BiomeRandNum;
-    float BiomeFrequancy = 0.15f;
+    public float BiomeFrequancy = 0.15f;
 
     // Decoration Vaiables
     public List<GameObject> SnowTrees;
     public List<GameObject> Trees;
 
     // Temp Variables
+    [Range(0 ,10)]
     public float PowValue = 6f;
+    [Range(0 ,10)]
+    public float BiomePowValue = 6f;
     public Button menuButton;
     public TextMeshProUGUI tileDisplay;
     int HexSize = 0;
     int iteration = 0;
     bool FirstOff = false;
+
+    float timer = 0.0f;
+
     public void Awake()
     {
         SnowTrees = new List<GameObject>();
@@ -86,7 +92,7 @@ public class SpawnGrid : MonoBehaviour
 
     private void Update()
     {
-        if (Camera.main.transform.position.y < 10)
+        if (Camera.main.transform.position.y < 20)
         {
             FirstOff = false;
             iteration++;
@@ -197,15 +203,15 @@ public class SpawnGrid : MonoBehaviour
             for (int r = 0; r < goCell[q].Count; r++)
             {
                 Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
-                BiomeHumidity[q][r] = Mathf.PerlinNoise((pos.x * BiomeFrequancy + (TerrainRandNum)) , pos.y * BiomeFrequancy + (TerrainRandNum));
+                BiomeHumidity[q][r] = Mathf.Pow(Mathf.PerlinNoise((pos.x * BiomeFrequancy + (TerrainRandNum)) , pos.y * BiomeFrequancy + (TerrainRandNum)), BiomePowValue); 
             }
         }
     }
 
     void GenerateTerrain()
     {
-        TerrainRandNum = UnityEngine.Random.Range(0, 99999);
-        BiomeRandNum = UnityEngine.Random.Range(0, 99999);
+       TerrainRandNum = UnityEngine.Random.Range(0, 99999);
+       BiomeRandNum = UnityEngine.Random.Range(0, 99999);
 
         GenerateBiomePerlinNoise();
         GenerateMainTerrainPerlinNoise();
@@ -223,8 +229,8 @@ public class SpawnGrid : MonoBehaviour
                 {
                     meshFilters[z] = CellByType[i][z].GetComponent<MeshFilter>();
                 }
-
-
+        
+        
                 int x = 0;
                 while (x < meshFilters.Length)
                 {

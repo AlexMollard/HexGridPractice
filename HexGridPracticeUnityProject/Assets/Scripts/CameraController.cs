@@ -8,7 +8,6 @@ using UnityEngine.EventSystems;
 public class CameraController : MonoBehaviour
 {
     public Camera mainCamera;
-    public Slider ZoomSlider;
     public int speed = 4;
     public float PCspeed = 1.0f;
     public float MINSCALE = 2.0F;
@@ -30,13 +29,14 @@ public class CameraController : MonoBehaviour
     float moveSpeedPC = 0.0f;
     public float ZoomAmount = 0.0f;
     public float ZoomSpeed = 40.0f;
+    public float PCZoomSpeed = 40.0f;
     RaycastHit hit;
-    public TextMeshProUGUI yDebug;
     public float MinHeight = 10.0f;
     int layerMask;
     public PieGraphManager Graph;
     public GameObject InfoCanvas;
-    public bool InCanvas = false;
+
+    public static bool BlockedByUI;
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
@@ -83,32 +83,21 @@ public class CameraController : MonoBehaviour
         }
 
         mainCamera.transform.position = new Vector3(Mathf.Clamp(mainCamera.transform.position.x, -40, 40), Mathf.Clamp(mainCamera.transform.position.y, MinHeight, 100), Mathf.Clamp(mainCamera.transform.position.z, -36, 30));
-
-
-        yDebug.text = "X: " + mainCamera.transform.position.x + " Y: " + mainCamera.transform.position.y + " Z: " + mainCamera.transform.position.z;
-      
     }
 
 
     void GetPCInput()
     {
-        var mousePosition = Input.mousePosition;
-        if (mousePosition.x > InfoCanvas.transform.position.x - InfoCanvas.GetComponent<RectTransform>().sizeDelta.x &&
-            mousePosition.x < InfoCanvas.transform.position.x + InfoCanvas.GetComponent<RectTransform>().sizeDelta.x &&
-            mousePosition.y > InfoCanvas.transform.position.y - InfoCanvas.GetComponent<RectTransform>().sizeDelta.y &&
-            mousePosition.y < InfoCanvas.transform.position.y + InfoCanvas.GetComponent<RectTransform>().sizeDelta.y)
-        {
-            InCanvas = true;
-        }
-        else
-        {
-            InCanvas = false;
-        }
-
         if (Input.GetKey(KeyCode.LeftShift))
+        {
             moveSpeedPC = PCspeed * 2 * Time.deltaTime;
+            PCZoomSpeed = ZoomSpeed * 6;
+        }
         else
+        {
+            PCZoomSpeed = ZoomSpeed;
             moveSpeedPC = PCspeed * Time.deltaTime;
+        }
 
         if (Input.GetKey(KeyCode.W))
         {
@@ -132,11 +121,11 @@ public class CameraController : MonoBehaviour
 
         if (Input.mouseScrollDelta.y > 0 )
         {
-            mainCamera.transform.Translate(Vector3.forward * (ZoomSpeed + mainCamera.transform.position.y ) * Time.deltaTime);
+            mainCamera.transform.Translate(Vector3.forward * (PCZoomSpeed + mainCamera.transform.position.y ) * Time.deltaTime);
         }
         else if (Input.mouseScrollDelta.y < 0 && mainCamera.transform.position.y < 100f)
         {
-            mainCamera.transform.Translate(Vector3.forward * -(ZoomSpeed + mainCamera.transform.position.y) * Time.deltaTime);
+            mainCamera.transform.Translate(Vector3.forward * -(PCZoomSpeed + mainCamera.transform.position.y) * Time.deltaTime);
         }
 
 
@@ -156,7 +145,7 @@ public class CameraController : MonoBehaviour
                     Graph.UpdateChart();
                 }
             }
-            else if (!InCanvas)
+            else if (!BlockedByUI)
             {
                 InfoCanvas.SetActive(false);
             }
@@ -164,7 +153,14 @@ public class CameraController : MonoBehaviour
 
 
     }
-
+    public void EnterUI()
+    {
+        BlockedByUI = true;
+    }
+    public void ExitUI()
+    {
+        BlockedByUI = false;
+    }
 
 
 }

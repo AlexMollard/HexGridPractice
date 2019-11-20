@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    enum CellType {Water, Sand, Dirt, Grass, Stone, Snow };
-    enum OreType {Lipidolite, RockSalt, Carallite, Limestone, Cuprites, Bauxite, Zencite, Galena, Magnetite};
-    enum TreeType {Conifer, Deciduous, Spruce, Acacia, SnowPine, RubberTree, MuseumPaloVerde, Cedar, Oak, Maple, CorkTree, ManGroves, BlackWood, BurntTree, KapokTree, Ceiba, Bamboo};
+    public enum CellType {Water, Sand, Dirt, Grass, Stone, Snow };
+    public enum OreType {Lipidolite, RockSalt, Carallite, Limestone, Cuprites, Bauxite, Zencite, Galena, Magnetite};
+    public enum TreeType {Conifer, Deciduous, Spruce, Acacia, SnowPine, RubberTree, JoshuaTree, PaloVerde, Cedar, Oak, Maple, CorkTree, ManGroves, BlackWood, BurntTree, KapokTree, Ceiba, Bamboo};
 
-    enum ShrubType {BlueBerries, HaircapMoss, Cloudberry };
+    public enum ShrubType {BlueBerries, HaircapMoss, Cloudberry, RedBerry, Cactus };
+    public enum AnimalType {Cow, Sheep, Deer, Wolf, Snake, Goat };
     // Up to Savanna
     // Start is called before the first frame update
     void Start()

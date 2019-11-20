@@ -26,6 +26,14 @@ public class PieGraphManager : MonoBehaviour
     public element[] RefElements;
     public float currentRotation;
     public TextMeshProUGUI BiomeText;
+    public TextMeshProUGUI[] Trees;
+    public TextMeshProUGUI[] Ores;
+    public TextMeshProUGUI[] Shrubs;
+    public TextMeshProUGUI[] Animals;
+    
+    public TextMeshProUGUI Alt;
+    public TextMeshProUGUI Hum;
+
 
     // Start is called before the first frame update
     void Start()
@@ -81,6 +89,96 @@ public class PieGraphManager : MonoBehaviour
             WedgeTransform.rotation = Quaternion.Euler(new Vector3(WedgeTransform.rotation.x, WedgeTransform.rotation.y, currentRotation));
 
         }
+
+        // Contains
+        List<string> tempList = new List<string>();
+
+        for (int i = 0; i < Trees.Length; i++)
+        {
+            Trees[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < Ores.Length; i++)
+        {
+            Ores[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < Shrubs.Length; i++)
+        {
+            Shrubs[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < Animals.Length; i++)
+        {
+            Animals[i].gameObject.SetActive(false);
+        }
+
+
+
+
+        //Trees
+        for (int i = 0; i < Enum.GetNames(typeof(Cell.TreeType)).Length; i++)
+        {
+            if (cell.terrain.HasTreeType[i])
+            {
+                tempList.Add(System.Convert.ToString((Cell.TreeType)i));
+            }
+        }
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            Trees[i].gameObject.SetActive(true);
+            Trees[i].text = "- " + tempList[i];
+        }
+        tempList.Clear();
+
+
+
+        //Ores
+        for (int i = 0; i < Enum.GetNames(typeof(Cell.OreType)).Length; i++)
+        {
+            if (cell.terrain.HasOreType[i])
+            {
+                tempList.Add(System.Convert.ToString((Cell.OreType)i));
+            }
+        }
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            Ores[i].gameObject.SetActive(true);
+            Ores[i].text = "- " + tempList[i];
+        }
+        tempList.Clear();
+
+        //Shrubs
+        for (int i = 0; i < Enum.GetNames(typeof(Cell.ShrubType)).Length; i++)
+        {
+            if (cell.terrain.HasShrubType[i])
+            {
+                tempList.Add(System.Convert.ToString((Cell.ShrubType)i));
+            }
+        }
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            Shrubs[i].gameObject.SetActive(true);
+            Shrubs[i].text = "- " + tempList[i];
+        }
+        tempList.Clear();
+
+        //Animals
+        for (int i = 0; i < Enum.GetNames(typeof(Cell.AnimalType)).Length; i++)
+        {
+            if (cell.terrain.HasAnimalType[i])
+            {
+                tempList.Add(System.Convert.ToString((Cell.AnimalType)i));
+            }
+        }
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            Animals[i].gameObject.SetActive(true);
+            Animals[i].text = "- " + tempList[i];
+        }
+        tempList.Clear();
+
+
+        Alt.text = System.Convert.ToString(cell.altitude);
+        Hum.text = System.Convert.ToString(cell.humidity);
+
     }
 
 }
