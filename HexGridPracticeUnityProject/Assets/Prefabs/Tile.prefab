@@ -92,6 +92,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TilePostition: {x: 0, y: 0}
+  altitude: 0
+  humidity: 0
   TileBiome: 0
   CellMaterial:
   - {fileID: 2100000, guid: cf1c137eab79efc4cb73b9816373d5a7, type: 2}
@@ -119,6 +121,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 24979fe43574f9d4a9318cf3c91141ee, type: 2}
   StoneMats:
   - {fileID: 2100000, guid: 87251316bb3fe6b4a88441463406397a, type: 2}
+  TileProperties: []
+  terrain: {fileID: 0}
 --- !u!64 &2173435111494287600
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -128,7 +132,7 @@ MeshCollider:
   m_GameObject: {fileID: 8513100193643531655}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 14

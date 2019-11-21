@@ -18,7 +18,7 @@ public class CellBehaviour : MonoBehaviour
     Transform ChildTransform;
     Renderer TreeRend;
     Renderer StoneRend;
-    Vector3 ChildOffset;
+    //Vector3 ChildOffset;
 
     [Header("Tile Properties")]
     public Vector2 TilePostition;
@@ -54,7 +54,7 @@ public class CellBehaviour : MonoBehaviour
     public TerrainBehavior terrain;
     public void Awake()
     {
-        ChildOffset = new Vector3();
+        //ChildOffset = new Vector3();
         TerrainRandNum = Random.Range(1, 1000);
         ChildTransform = GetComponent<Transform>();
         TempObjects = new List<GameObject>();

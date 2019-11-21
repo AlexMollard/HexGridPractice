@@ -176,7 +176,7 @@ public class SpawnGrid : MonoBehaviour
         }
         else
         {
-            timer += Time.deltaTime * 0.2f;
+            timer += Time.deltaTime * 0.5f;
             startupScale = new Vector3(1, Mathf.Clamp(Mathf.Lerp(0,1,timer), 0, 1), 1);
             for (int i = 0; i < Chunks.Count; i++)
             {

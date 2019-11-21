@@ -114,11 +114,11 @@ public class PieGraphManager : MonoBehaviour
 
 
         //Trees
-        for (int i = 0; i < Enum.GetNames(typeof(Cell.TreeType)).Length; i++)
+        for (int i = 0; i < Enum.GetNames(typeof(BiomeManager.TreeType)).Length; i++)
         {
             if (cell.terrain.HasTreeType[i])
             {
-                tempList.Add(System.Convert.ToString((Cell.TreeType)i));
+                tempList.Add(System.Convert.ToString((BiomeManager.TreeType)i));
             }
         }
         for (int i = 0; i < tempList.Count; i++)
@@ -131,11 +131,11 @@ public class PieGraphManager : MonoBehaviour
 
 
         //Ores
-        for (int i = 0; i < Enum.GetNames(typeof(Cell.OreType)).Length; i++)
+        for (int i = 0; i < Enum.GetNames(typeof(BiomeManager.OreType)).Length; i++)
         {
             if (cell.terrain.HasOreType[i])
             {
-                tempList.Add(System.Convert.ToString((Cell.OreType)i));
+                tempList.Add(System.Convert.ToString((BiomeManager.OreType)i));
             }
         }
         for (int i = 0; i < tempList.Count; i++)
@@ -146,11 +146,11 @@ public class PieGraphManager : MonoBehaviour
         tempList.Clear();
 
         //Shrubs
-        for (int i = 0; i < Enum.GetNames(typeof(Cell.ShrubType)).Length; i++)
+        for (int i = 0; i < Enum.GetNames(typeof(BiomeManager.ShrubType)).Length; i++)
         {
             if (cell.terrain.HasShrubType[i])
             {
-                tempList.Add(System.Convert.ToString((Cell.ShrubType)i));
+                tempList.Add(System.Convert.ToString((BiomeManager.ShrubType)i));
             }
         }
         for (int i = 0; i < tempList.Count; i++)
@@ -161,11 +161,11 @@ public class PieGraphManager : MonoBehaviour
         tempList.Clear();
 
         //Animals
-        for (int i = 0; i < Enum.GetNames(typeof(Cell.AnimalType)).Length; i++)
+        for (int i = 0; i < Enum.GetNames(typeof(BiomeManager.AnimalType)).Length; i++)
         {
             if (cell.terrain.HasAnimalType[i])
             {
-                tempList.Add(System.Convert.ToString((Cell.AnimalType)i));
+                tempList.Add(System.Convert.ToString((BiomeManager.AnimalType)i));
             }
         }
         for (int i = 0; i < tempList.Count; i++)
