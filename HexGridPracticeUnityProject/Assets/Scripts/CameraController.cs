@@ -49,6 +49,8 @@ public class CameraController : MonoBehaviour
     Vector3 SelectedCellPostition;
     Vector3 direction;
     Quaternion toRotation;
+    bool IsValidTouch = false;
+    bool TouchedOnly = false;
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
@@ -64,6 +66,28 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.touchCount > 0)
+        {
+            if (Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+                //Touched
+                IsValidTouch = true;
+            }
+
+
+            if (Input.GetTouch(0).phase == TouchPhase.Moved)
+            {
+                //Moved Finger (Now Invalid!)
+                IsValidTouch = false;
+            }
+
+            if (IsValidTouch && Input.GetTouch(0).phase == TouchPhase.Ended)
+            {
+                TouchedOnly = true;
+            }
+        }
+
+
         if (Physics.Raycast(mainCamera.transform.position, -mainCamera.transform.up, out hit, 20f))
         {
             MinHeight = (hit.transform.localScale.y / 5) + 2;
@@ -106,7 +130,7 @@ public class CameraController : MonoBehaviour
         {
             if (TimeGone < 1.2f)
             {
-                transform.rotation = Quaternion.Lerp(transform.rotation, toRotation * Quaternion.Euler(90,0,0), TimeGone / 20);
+                transform.rotation = Quaternion.Lerp(Quaternion.Euler(LastRot), Quaternion.Euler(90,0,0), TimeGone / 1.75f);
                 mainCamera.transform.position = Vector3.Lerp(LastPos, SelectedCellPostition, TimeGone);
                 BlackFade.GetComponent<Image>().color = new Color(0, 0, 0, Mathf.Lerp(0, 1, TimeGone));
 
@@ -170,10 +194,11 @@ public class CameraController : MonoBehaviour
             mainCamera.transform.Translate(Vector3.forward * -(PCZoomSpeed + mainCamera.transform.position.y) * Time.deltaTime);
         }
 
+        
 
-
-        if (Input.GetMouseButtonDown(0))
+        if ((Input.touchCount <= 0  && Input.GetMouseButtonDown(0)) || (Input.touchCount > 0 && TouchedOnly))
         {
+            TouchedOnly = false;
             if (!IsViewingInnerCell)
             {
                 if (!InfoCanvas.activeSelf)
