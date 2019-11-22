@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System;
 
 public class CameraController : MonoBehaviour
 {
@@ -22,9 +23,7 @@ public class CameraController : MonoBehaviour
     private Vector2 movePrevDist = new Vector2(0, 0);
     public float moveSpeedTouch = 1.0F;
     public float dragSpeed = 2;
-    private Vector3 dragOrigin;
     public float PCdragSpeed = 2;
-    private Vector3 PCdragOrigin;
     Rigidbody RB;
     float moveSpeedPC = 0.0f;
     public float ZoomAmount = 0.0f;
@@ -35,15 +34,32 @@ public class CameraController : MonoBehaviour
     int layerMask;
     public PieGraphManager Graph;
     public GameObject InfoCanvas;
+    public GameObject MainMenuButton;
 
     public static bool BlockedByUI;
+    public GameObject SelectedCell;
+    float TimeGone = 0.0f;
+    float FadeTimer = 0.0f;
+    public Vector3 LastPos;
+    public Vector3 LastRot;
+    public bool IsViewingInnerCell = false;
+    public GameObject ZoomInButton;
+    public GameObject BlackFade;
+    public GameObject ReturnToMapButton;
+    Vector3 SelectedCellPostition;
+    Vector3 direction;
+    Quaternion toRotation;
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
         layerMask = 1 << 2;
         layerMask = ~layerMask;
         InfoCanvas.SetActive(false);
+        ReturnToMapButton.SetActive(false);
+        ZoomInButton.GetComponent<Button>().onClick.AddListener(VisitCell);
+        ReturnToMapButton.GetComponent<Button>().onClick.AddListener(ReturnToMap);
     }
+
 
     // Update is called once per frame
     void Update()
@@ -82,7 +98,33 @@ public class CameraController : MonoBehaviour
             GetPCInput();
         }
 
-        mainCamera.transform.position = new Vector3(Mathf.Clamp(mainCamera.transform.position.x, -40, 40), Mathf.Clamp(mainCamera.transform.position.y, MinHeight, 100), Mathf.Clamp(mainCamera.transform.position.z, -36, 30));
+        if (!IsViewingInnerCell)
+        {
+            mainCamera.transform.position = new Vector3(Mathf.Clamp(mainCamera.transform.position.x, -40, 40), Mathf.Clamp(mainCamera.transform.position.y, MinHeight, 100), Mathf.Clamp(mainCamera.transform.position.z, -36, 30));
+        }
+        else
+        {
+            if (TimeGone < 1.2f)
+            {
+                transform.rotation = Quaternion.Lerp(transform.rotation, toRotation * Quaternion.Euler(90,0,0), TimeGone / 20);
+                mainCamera.transform.position = Vector3.Lerp(LastPos, SelectedCellPostition, TimeGone);
+                BlackFade.GetComponent<Image>().color = new Color(0, 0, 0, Mathf.Lerp(0, 1, TimeGone));
+
+                TimeGone += Time.deltaTime * 0.33f;
+            }
+            else if (FadeTimer < 1.2f)
+            {
+                mainCamera.transform.position = Vector3.Lerp(new Vector3(400, 25, -25), new Vector3(400, 15, -15), FadeTimer);
+                mainCamera.transform.rotation = Quaternion.Euler(new Vector3(Mathf.Lerp(30f, 50, FadeTimer), 0, 0));
+                BlackFade.GetComponent<Image>().color = new Color(0, 0, 0, Mathf.Lerp(1, 0, FadeTimer));
+                FadeTimer += Time.deltaTime * 0.5f;
+                if (FadeTimer > 1f)
+                {
+                    ReturnToMapButton.SetActive(true);
+                    BlackFade.SetActive(false);
+                }
+            }
+        }
     }
 
 
@@ -132,23 +174,26 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-
-            if (!InfoCanvas.activeSelf)
+            if (!IsViewingInnerCell)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                if (Physics.Raycast(ray, out hit, 100, layerMask))
+                if (!InfoCanvas.activeSelf)
                 {
-                    hit.transform.GetComponent<CellBehaviour>().GenerateTerrain();
-                    Graph.cell = hit.transform.GetComponent<CellBehaviour>();
-                    InfoCanvas.SetActive(true);
-                    Graph.UpdateChart();
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+
+                    if (Physics.Raycast(ray, out hit, 100, layerMask))
+                    {
+                        SelectedCell = hit.transform.gameObject;
+                        hit.transform.GetComponent<CellBehaviour>().GenerateTerrain();
+                        Graph.cell = hit.transform.GetComponent<CellBehaviour>();
+                        InfoCanvas.SetActive(true);
+                        Graph.UpdateChart();
+                    }
                 }
-            }
-            else if (!BlockedByUI)
-            {
-                InfoCanvas.SetActive(false);
+                else if (!BlockedByUI)
+                {
+                    InfoCanvas.SetActive(false);
+                }
             }
         }
 
@@ -163,5 +208,30 @@ public class CameraController : MonoBehaviour
         BlockedByUI = false;
     }
 
+    private void VisitCell()
+    {
+        IsViewingInnerCell = true;
+        InfoCanvas.SetActive(false);
+        MainMenuButton.SetActive(false);
+        BlackFade.SetActive(true);
+        LastPos = transform.position;
+        LastRot = transform.rotation.eulerAngles;
+        TimeGone = 0;
+        FadeTimer = 0;
+
+        direction = SelectedCellPostition - transform.position;
+        toRotation = Quaternion.FromToRotation(transform.forward, direction);
+
+        SelectedCellPostition = new Vector3(SelectedCell.transform.position.x, SelectedCell.transform.localScale.y / 5, SelectedCell.transform.position.z);
+    }
+
+    private void ReturnToMap()
+    {
+        ReturnToMapButton.SetActive(false);
+        MainMenuButton.SetActive(true);
+        IsViewingInnerCell = false;
+        transform.position = LastPos;
+        transform.rotation = Quaternion.Euler(LastRot);
+    }
 
 }

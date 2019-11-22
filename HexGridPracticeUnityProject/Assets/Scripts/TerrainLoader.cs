@@ -69,7 +69,7 @@ public class TerrainLoader : MonoBehaviour
 
         GameObject go = Instantiate(Tile);
         go.transform.parent = SmallCellsParent.transform;
-        go.transform.position = new Vector3(posQ + 100, 0, posR);
+        go.transform.position = new Vector3(posQ + 400, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);
         go.transform.name = Q + ", " + R;
         go.AddComponent<MeshCollider>();
