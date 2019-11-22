@@ -86,6 +86,7 @@ public class SpawnGrid : MonoBehaviour
             for (int r = 0; r < goCell[q].Count; r++)
             {
                 Cell[q][r] = goCell[q][r].GetComponent<CellBehaviour>();
+                Cell[q][r].terrainLoader = GetComponent<TerrainLoader>();
             }
         }
 
@@ -252,7 +253,6 @@ public class SpawnGrid : MonoBehaviour
                     meshFilters[z] = CellByType[i][z].GetComponent<MeshFilter>();
                 }
         
-        
                 int x = 0;
                 while (x < meshFilters.Length)
                 {
@@ -286,7 +286,6 @@ public class SpawnGrid : MonoBehaviour
     //----------------------
     //  HEX FUNCTIONS
     //----------------------
-
     void CreateHexagon()
     {
         for (int q = -GridSize; q <= GridSize; q++)

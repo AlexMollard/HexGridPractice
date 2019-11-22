@@ -188,7 +188,7 @@ MonoBehaviour:
   TowerParent: {fileID: 0}
   TerrainSize: 100
   perlinFrequancy: 0.2
-  GridSize: 15
+  GridSize: 10
 --- !u!114 &1608045954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,7 +412,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e35995ef658ecf94b8c51655bbe01bb3, type: 2}
+  - {fileID: 2100000, guid: f26b042f35ed9354596d40b4c7bab468, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -449,7 +449,7 @@ Transform:
   m_GameObject: {fileID: 1967938249}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.2, z: 0}
-  m_LocalScale: {x: 3.1, y: 1, z: 2.7}
+  m_LocalScale: {x: 3.5, y: 1, z: 3.5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4

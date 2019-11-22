@@ -140,6 +140,7 @@ public class CameraController : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit, 100, layerMask))
                 {
+                    hit.transform.GetComponent<CellBehaviour>().GenerateTerrain();
                     Graph.cell = hit.transform.GetComponent<CellBehaviour>();
                     InfoCanvas.SetActive(true);
                     Graph.UpdateChart();

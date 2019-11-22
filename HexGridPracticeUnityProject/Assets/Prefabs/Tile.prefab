@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 8513100193643531654}
   - component: {fileID: 8513100193643531659}
   - component: {fileID: 2173435111494287600}
+  - component: {fileID: 4770034318521422068}
+  - component: {fileID: 2931261066113818464}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -91,6 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83f9cfccfd71ce544af6d15fb0d2afb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  terrainLoader: {fileID: 0}
   TilePostition: {x: 0, y: 0}
   altitude: 0
   humidity: 0
@@ -137,3 +140,58 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300000, guid: ac4a5a9e24f3efa44b8f02171e9eefda, type: 3}
+--- !u!114 &4770034318521422068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8513100193643531655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0993bf4a459abe44b321a9d186dc46a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Biome: 0
+  TileMaterial:
+  - {fileID: 2100000, guid: a41109e1e3c49ea4fb7c40133e746b24, type: 2}
+  - {fileID: 2100000, guid: 49791d429c83ef84ca97c5190ac0a6c5, type: 2}
+  - {fileID: 2100000, guid: bffd42a96a8a9b9439db0a32402fb19f, type: 2}
+  - {fileID: 2100000, guid: b4303097cb0dcc545a42bc1f34b740f0, type: 2}
+  - {fileID: 2100000, guid: 244ae7a2a0e3dd044ba00ef3adeecfe4, type: 2}
+  - {fileID: 2100000, guid: a4a431afa43b6d94c94592535721d9fd, type: 2}
+  OreTowers:
+  - {fileID: 536744483184213160, guid: 7228fbaee11aeaf4ea00f387382c0e5d, type: 3}
+  - {fileID: 2243052847160623810, guid: 735dade65812f194da0bafc442ed6565, type: 3}
+  - {fileID: 7867710519540277918, guid: 3c94bdce3c371ca41a84afb9e2068c98, type: 3}
+  TreeTowers:
+  - {fileID: 7059644584809204662, guid: 15dfafddad8bb14469d1f883ede926ed, type: 3}
+  - {fileID: 4746829382100524011, guid: f2da4a0951004f44ca8ee1e9d8fbb3c3, type: 3}
+  - {fileID: 1464029199371131764, guid: 5cbcdfa7da1ac5441ab87ef14bc99a5b, type: 3}
+  ShrubTowers:
+  - {fileID: 3671604038022332166, guid: 827cdbbbadc853d4b8b8ac3aad8f1b68, type: 3}
+  - {fileID: 4505435745259467349, guid: 80f87c47e1a6a8942ad59bd7564372f6, type: 3}
+  - {fileID: 1358385499704423192, guid: 5b3cd437ac126dd45ac7431d71a412d6, type: 3}
+  AnimalTowers:
+  - {fileID: 7423903271313943673, guid: a559b6efca25b4a4ca2177e1aea18edd, type: 3}
+  - {fileID: 4764838038914759451, guid: 481fc79fd7c6c0d46a87a461baf2b86c, type: 3}
+  - {fileID: 711638341546285198, guid: 2fe26808187bc9349b15b4abecf3f53d, type: 3}
+  HasTreeType: 
+  HasOreType: 
+  HasShrubType: 
+  HasAnimalType: 
+  TowerParent: {fileID: 0}
+  perlinFrequancy: 0.2
+  GridSize: 10
+--- !u!114 &2931261066113818464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8513100193643531655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef29e8fab100c4e4d8ed404d4a89e99a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class TerrainBehavior : MonoBehaviour
 {
-    public GameObject Tile;
     public CellBehaviour.BiomeType Biome;
     BiomeManager biomeManager;
 
     public List<List<Cell>> Cells;
 
     public Material[] TileMaterial;
+    public int[] TileTypeCount;
     public GameObject[] OreTowers;
     public GameObject[] TreeTowers;
     public GameObject[] ShrubTowers;
@@ -20,14 +20,14 @@ public class TerrainBehavior : MonoBehaviour
     public bool[] HasOreType;
     public bool[] HasShrubType;
     public bool[] HasAnimalType;
+    float timer = 0.0f;
 
     public GameObject TowerParent;
 
-    public int TerrainSize = 10;
     public float perlinFrequancy = 2.0f;
 
     public List<List<GameObject>> CellObjects;
-
+    TileProperties tileProperties;
     // Hex Properties
     int CellArrayIndex = 0;
     float HexScale = .57f;
@@ -35,12 +35,13 @@ public class TerrainBehavior : MonoBehaviour
 
     void Start()
     {
+        #region Constructing Variables
+        TileTypeCount = new int[Enum.GetNames(typeof(BiomeManager.CellType)).Length + Enum.GetNames(typeof(BiomeManager.TowerType)).Length];
+        tileProperties = new TileProperties();
         TowerParent = new GameObject();
         TowerParent.name = "Towers";
-        CellObjects = new List<List<GameObject>>();
-        Cells = new List<List<Cell>>();
-        CreateHexagon();
-        #region TestingTiles I have hardcoded values that should be changed in future builds
+        //CellObjects = new List<List<GameObject>>();
+        //Cells = new List<List<Cell>>();
 
         HasTreeType = new bool[Enum.GetNames(typeof(BiomeManager.TreeType)).Length];
         HasOreType = new bool[Enum.GetNames(typeof(BiomeManager.OreType)).Length];
@@ -63,54 +64,26 @@ public class TerrainBehavior : MonoBehaviour
         {
             HasAnimalType[i] = false;
         }
-        HasTreeType[1] = true;
-        HasTreeType[5] = true;
-        HasTreeType[3] = true;
-        HasTreeType[6] = true;
-        HasTreeType[7] = true;
-        HasTreeType[8] = true;
-        HasOreType[0] = true;
-        HasOreType[3] = true;
-        HasOreType[4] = true;
-        HasShrubType[0] = true;
-        HasShrubType[1] = true;
-        HasShrubType[2] = true;
-        HasShrubType[3] = true;
-        HasShrubType[4] = true;
-        HasAnimalType[0] = true;
-        HasAnimalType[1] = true;
-        HasAnimalType[2] = true;
-        HasAnimalType[3] = true;
         #endregion
 
-        for (int q = 0; q < GridSize * 2 + 1; q++)
-        {
-            Cells[q] = new List<Cell>();
 
-            for (int r = 0; r < CellObjects[q].Count; r++)
-            {
-                Cells[q].Add(CellObjects[q][r].GetComponent<Cell>());
-            }
-        }
 
         biomeManager = GetComponent<BiomeManager>();
-
-        GenerateTerrain();
     }
 
-    private void Update()
+    public void GenerateTerrain(float randomNumber, List<List<GameObject>> gameObjects, List<List<Cell>> cells)
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        CellObjects = gameObjects;
+        Cells = cells;
+
+        for (int i = 0; i < TileTypeCount.Length; i++)
         {
-            GenerateTerrain();
+            TileTypeCount[i] = 0;
         }
-    }
-    public void GenerateTerrain()
-    {
-        float randomNumber = UnityEngine.Random.Range(0, 100000);
+
+
         float humidity = 0.0f;
         float altitude = 0.0f;
-        TileProperties tileProperties = new TileProperties();
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {
             for (int r = 0; r < CellObjects[q].Count; r++)
@@ -126,17 +99,17 @@ public class TerrainBehavior : MonoBehaviour
                 CellObjects[q][r].transform.localScale = new Vector3(1, altitude * 4, 1);
                 CellObjects[q][r].transform.position = new Vector3(CellObjects[q][r].transform.position.x, 0, CellObjects[q][r].transform.position.z);
 
-
                 if (Biome == CellBehaviour.BiomeType.Taiga)
                     tileProperties = biomeManager.Taiga(altitude, humidity);
 
                 CellObjects[q][r].GetComponent<Renderer>().material = TileMaterial[tileProperties.CellType];
+                TileTypeCount[tileProperties.CellType] += 1;
+
 
                 if (tileProperties.CellType == 0)
                 {
                     CellObjects[q][r].transform.localScale = new Vector3(1, 1f, 1);
                     CellObjects[q][r].transform.position = new Vector3(CellObjects[q][r].transform.position.x,0, CellObjects[q][r].transform.position.z);
-                
                 }
 
                 if (tileProperties.TowerIndex != 404)
@@ -147,6 +120,8 @@ public class TerrainBehavior : MonoBehaviour
                         Cells[q][r].Tower = System.Convert.ToString((BiomeManager.OreType)tileProperties.TowerIndex);
                         Cells[q][r].TowerObject = Instantiate(OreTowers[(int)tileProperties.TowerIndex]);
                         Cells[q][r].TowerObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+                        HasOreType[(int)tileProperties.TowerIndex] = true;
+                        TileTypeCount[Enum.GetNames(typeof(BiomeManager.CellType)).Length + tileProperties.Towertype + 1] += 1;
                     }
                     // Tree
                     else if (tileProperties.Towertype == 1)
@@ -154,7 +129,8 @@ public class TerrainBehavior : MonoBehaviour
                         Cells[q][r].Tower = System.Convert.ToString((BiomeManager.TreeType)tileProperties.TowerIndex);
                         Cells[q][r].TowerObject = Instantiate(TreeTowers[(int)tileProperties.TowerIndex]);
                         Cells[q][r].TowerObject.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
-
+                        HasTreeType[(int)tileProperties.TowerIndex] = true;
+                        TileTypeCount[Enum.GetNames(typeof(BiomeManager.CellType)).Length + tileProperties.Towertype + 1] += 1;
                     }
                     // Shrub
                     else if (tileProperties.Towertype == 2)
@@ -162,6 +138,8 @@ public class TerrainBehavior : MonoBehaviour
                         Cells[q][r].Tower = System.Convert.ToString((BiomeManager.ShrubType)tileProperties.TowerIndex);
                         Cells[q][r].TowerObject = Instantiate(ShrubTowers[(int)tileProperties.TowerIndex]);
                         Cells[q][r].TowerObject.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+                        HasShrubType[(int)tileProperties.TowerIndex] = true;
+                        TileTypeCount[Enum.GetNames(typeof(BiomeManager.CellType)).Length + tileProperties.Towertype + 1] += 1;
                     }
                     // Animals
                     else if (tileProperties.Towertype == 3)
@@ -169,11 +147,17 @@ public class TerrainBehavior : MonoBehaviour
                         Cells[q][r].Tower = System.Convert.ToString((BiomeManager.AnimalType)tileProperties.TowerIndex);
                         Cells[q][r].TowerObject = Instantiate(AnimalTowers[(int)tileProperties.TowerIndex]);
                         Cells[q][r].TowerObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-
+                        HasAnimalType[(int)tileProperties.TowerIndex] = true;
+                        TileTypeCount[Enum.GetNames(typeof(BiomeManager.CellType)).Length + tileProperties.Towertype + 1] += 1;
                     }
                     else
                     {
                         Debug.Log("Unknown Tower Type");
+                    }
+
+                    if (TowerParent)
+                    {
+                        Debug.Log("Tower");
                     }
 
                     Cells[q][r].hasTower = true;
@@ -183,47 +167,8 @@ public class TerrainBehavior : MonoBehaviour
             }
         }
 
-
-
-
-
-    }
-    void CreateHexagon()
-    {
-        for (int q = -GridSize; q <= GridSize; q++)
-        {
-            CellObjects.Add(new List<GameObject>());
-            Cells.Add(new List<Cell>());
-
-            int r1 = Mathf.Max(-GridSize, -q - GridSize);
-            int r2 = Mathf.Min(GridSize, -q + GridSize);
-
-            for (int r = r1; r <= r2; r++)
-            {
-                CreateCell(q, r);
-            }
-            CellArrayIndex++;
-        }
     }
 
-    private void CreateCell(int Q, int R)
-    {
-        float posQ = AxialFlatToWorld(Q, R).y;
-        float posR = AxialFlatToWorld(Q, R).x;
 
-        GameObject go = Instantiate(Tile);
-        go.transform.parent = transform;
-        go.transform.position = new Vector3(posQ, 0, posR);
-        go.transform.localScale = new Vector3(1, 1, 1);
-        go.AddComponent<MeshCollider>();
-        CellObjects[CellArrayIndex].Add(go);
-    }
-
-    Vector2 AxialFlatToWorld(int q, int r)
-    {
-        var x = HexScale * (3.0f / 2f * q);
-        var y = HexScale * (Mathf.Sqrt(3f) / 2f * q + (Mathf.Sqrt(3f) * r));
-
-        return new Vector2(x, y);
-    }
+   
 }

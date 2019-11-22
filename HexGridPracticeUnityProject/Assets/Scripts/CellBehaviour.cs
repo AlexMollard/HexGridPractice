@@ -18,6 +18,7 @@ public class CellBehaviour : MonoBehaviour
     Transform ChildTransform;
     Renderer TreeRend;
     Renderer StoneRend;
+    public TerrainLoader terrainLoader;
     //Vector3 ChildOffset;
 
     [Header("Tile Properties")]
@@ -52,32 +53,35 @@ public class CellBehaviour : MonoBehaviour
     float PowValue = 2.03f;
     SmallTile[,] InnerTile;
     public TerrainBehavior terrain;
+    float TerrainRandomNumber = 0.0f;
     public void Awake()
     {
-        //ChildOffset = new Vector3();
+        TerrainRandomNumber = UnityEngine.Random.Range(0, 100000);
+
         TerrainRandNum = Random.Range(1, 1000);
         ChildTransform = GetComponent<Transform>();
         TempObjects = new List<GameObject>();
-        //TileHeight = new float[] { 3.75f, 3.0f, 4.25f, 1.75f, 3.0f, 2.75f, 2.5f, 4.45f, 1.0f, 1.5f, 4.0f, 3.85f, 3.0f, 2.0f, 2.0f, 1.0f };
         TileHeight = new float[] { 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f };
-        TileProperties = new float[8];
         PowValue = 2.0f;
+
+        TileProperties = new float[8];   
         for (int i = 0; i < TileProperties.Length; i++)
         {
             TileProperties[i] = 0;
         }
+
         InnerTileNoise = new float[10,10];
         InnerTile = new SmallTile[10,10];
 
-        terrain = gameObject.AddComponent<TerrainBehavior>();
+        terrain = gameObject.GetComponent<TerrainBehavior>();
+
+
     }
 
     public void SetTileProperties(float Altitude, float Humidity)
     {
         SetBiome(Altitude, Humidity);
         AssignType();
-        GenerateTerrain();
-
     }
 
     void SetBiome(float Altitude, float Humidity)
@@ -497,54 +501,10 @@ public class CellBehaviour : MonoBehaviour
 
     public void GenerateTerrain()
     {
-        for (int x = 0; x < 10; x++)
-        {
-            for (int y = 0; y < 10; y++)
-            {
-                float Noise = Mathf.PerlinNoise((x * TerrainFrequancy + TerrainRandNum), y * TerrainFrequancy + TerrainRandNum);
-                Noise += 0.5f * Mathf.PerlinNoise((2 * x * TerrainFrequancy + TerrainRandNum), 2 * y * TerrainFrequancy + TerrainRandNum);
-                Noise += 0.25f * Mathf.PerlinNoise((4 * x * TerrainFrequancy + TerrainRandNum), 4 * y * TerrainFrequancy + TerrainRandNum);
+        terrainLoader.LoadTerrain(terrain, TerrainRandomNumber);
 
-                Noise = Mathf.Pow(Noise, PowValue);
-
-                InnerTileNoise[x, y] = Noise;
-                if (Noise < 0.1f)
-                {
-                    InnerTile[x, y].tileType = ResourceType.Water;
-                }
-                else if (Noise < 0.18f)
-                {
-                    InnerTile[x, y].tileType = ResourceType.Sand;
-                }
-                else if (Noise < 0.8f)
-                {
-                    if (Random.value > 0.2f)
-                    {
-                        InnerTile[x, y].tileType = ResourceType.Grass;
-                    }
-                    else if (Random.value > 0.4f)
-                    {
-                        InnerTile[x, y].tileType = ResourceType.Trees;
-                    }
-                    else
-                    {
-                        InnerTile[x, y].tileType = ResourceType.Animals;
-                    }
-                }
-                else
-                {
-                    if (Random.value > 0.1f)
-                    {
-                        InnerTile[x, y].tileType = ResourceType.Stone;
-                    }
-                    else
-                    {
-                        InnerTile[x, y].tileType = ResourceType.Ores;
-                    }
-                }
-                TileProperties[(int)InnerTile[x, y].tileType] += 1;
-            }
-        }
+        for (int i = 0; i < TileProperties.Length; i++)
+            TileProperties[i] = terrain.TileTypeCount[i];
 
     }
 
