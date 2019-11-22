@@ -25,7 +25,7 @@ public class SpawnGrid : MonoBehaviour
 
     // Hex Properties
     float HexScale = .57f;
-    public int GridSize = 2;
+    public int GridSize = 10;
 
     // Noise Properties
     public float[][] BiomeHumidity;
@@ -56,8 +56,16 @@ public class SpawnGrid : MonoBehaviour
     List<GameObject> Chunks;
     float timer = 0.0f;
     Vector3 startupScale;
+    public GameObject Towers;
+    public GameObject ChunkParent;
+    GameObject BigCellParent;
     public void Awake()
     {
+        BigCellParent = new GameObject();
+        BigCellParent.name = "Map Cells";
+        BigCellParent.transform.parent = transform;
+        Towers = new GameObject();
+        Towers.name = "Towers";
         Chunks = new List<GameObject>();
         SnowTrees = new List<GameObject>();
         Trees = new List<GameObject>();
@@ -239,7 +247,8 @@ public class SpawnGrid : MonoBehaviour
         GenerateBiomePerlinNoise();
         GenerateMainTerrainPerlinNoise();
 
-
+        ChunkParent = new GameObject();
+        ChunkParent.name = "Chunk Meshes";
         for (int i = 0; i < CellByType.Count; i++)
         {
             if (CellByType[i].Count > 0)
@@ -269,6 +278,7 @@ public class SpawnGrid : MonoBehaviour
                 newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
                 newChunk.transform.gameObject.SetActive(true);
                 newChunk.transform.localScale = new Vector3(1,0.0f,1);
+                newChunk.transform.SetParent(ChunkParent.transform);
                 Chunks.Add(newChunk);
             }
         }
@@ -309,7 +319,7 @@ public class SpawnGrid : MonoBehaviour
         float posR = AxialFlatToWorld(Q, R).x;
 
         GameObject go = Instantiate(TilePrefab);
-        go.transform.parent = transform;
+        go.transform.parent = BigCellParent.transform;
         go.transform.position = new Vector3(posQ, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);
         go.GetComponent<CellBehaviour>().TilePostition = new Vector2(Q, R);

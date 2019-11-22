@@ -10,11 +10,15 @@ public class TerrainLoader : MonoBehaviour
     // Hex Properties
     int CellArrayIndex = 0;
     float HexScale = .57f;
-    public int GridSize = 2;
+    public int GridSize = 10;
     public List<List<GameObject>> CellObjects;
     public List<List<Cell>> Cells;
+    GameObject SmallCellsParent;
     private void Start()
     {
+        SmallCellsParent = new GameObject();
+        SmallCellsParent.name = "Inner Cells";
+        SmallCellsParent.transform.parent = transform;
         CurrentTerrainBehavior = null;
         CellObjects = new List<List<GameObject>>();
         Cells = new List<List<Cell>>();
@@ -32,10 +36,11 @@ public class TerrainLoader : MonoBehaviour
         }
     }
 
-    public void LoadTerrain(TerrainBehavior terrain, float randNumber)
+    public void LoadTerrain(TerrainBehavior terrain, float randNumber, GameObject TowersParent)
     {
         CurrentTerrainBehavior = terrain;
-        CurrentTerrainBehavior.GenerateTerrain(randNumber, CellObjects, Cells);
+        CurrentTerrainBehavior.TowerParent = TowersParent;
+        CurrentTerrainBehavior.GenerateTerrain(randNumber, CellObjects, Cells, GridSize);
     }
 
     #region Hex Stuff
@@ -63,9 +68,10 @@ public class TerrainLoader : MonoBehaviour
         float posR = AxialFlatToWorld(Q, R).x;
 
         GameObject go = Instantiate(Tile);
-        go.transform.parent = transform;
-        go.transform.position = new Vector3(posQ + 50, 0, posR);
+        go.transform.parent = SmallCellsParent.transform;
+        go.transform.position = new Vector3(posQ + 100, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);
+        go.transform.name = Q + ", " + R;
         go.AddComponent<MeshCollider>();
         CellObjects[CellArrayIndex].Add(go);
     }

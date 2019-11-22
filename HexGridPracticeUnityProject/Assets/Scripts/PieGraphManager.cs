@@ -14,7 +14,6 @@ public class PieGraphManager : MonoBehaviour
         public float Fill;
         public GameObject Wedge;
         public GameObject Legend;
-        public int Color;
     }
     public float Total;
     public CellBehaviour cell;
@@ -54,11 +53,18 @@ public class PieGraphManager : MonoBehaviour
         Total = 0;
         Biome.GetComponent<Image>().color = cell.CellMaterial[(int)cell.TileBiome].color;
         BiomeText.text = System.Convert.ToString(cell.TileBiome);
+        string debugLine = "";
+        for (int i = 0; i < Elements.Length; i++)
+        {
+            string name = (i < System.Enum.GetNames(typeof(BiomeManager.CellType)).Length) ? Convert.ToString((BiomeManager.CellType)i) : (i == (System.Enum.GetNames(typeof(BiomeManager.CellType)).Length)) ? "Ores" : (i == (System.Enum.GetNames(typeof(BiomeManager.CellType)).Length) + 1) ? "Trees" : (i == (System.Enum.GetNames(typeof(BiomeManager.CellType)).Length) + 2) ? "shrubs" : "Animals";
+            debugLine += name + ": " + cell.TileProperties[i] + ", ";
+        }
+            Debug.Log(debugLine);
+
         for (int i = 0; i < Elements.Length; i++)
         {
             Elements[i].Value = cell.TileProperties[i];
             Total += Elements[i].Value;
-            Elements[i].Color = i;
             RefElements[i] = Elements[i];
         }
 

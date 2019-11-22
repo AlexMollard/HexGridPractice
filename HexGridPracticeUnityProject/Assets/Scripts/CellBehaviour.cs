@@ -53,6 +53,7 @@ public class CellBehaviour : MonoBehaviour
     float PowValue = 2.03f;
     SmallTile[,] InnerTile;
     public TerrainBehavior terrain;
+    GameObject TowersParent;
     float TerrainRandomNumber = 0.0f;
     public void Awake()
     {
@@ -64,7 +65,7 @@ public class CellBehaviour : MonoBehaviour
         TileHeight = new float[] { 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f };
         PowValue = 2.0f;
 
-        TileProperties = new float[8];   
+        TileProperties = new float[System.Enum.GetNames(typeof(BiomeManager.CellType)).Length + System.Enum.GetNames(typeof(BiomeManager.TowerType)).Length];   
         for (int i = 0; i < TileProperties.Length; i++)
         {
             TileProperties[i] = 0;
@@ -93,6 +94,7 @@ public class CellBehaviour : MonoBehaviour
     BiomeType GetBiomeType(float Altitude, float Humidity)
     {
         Humidity = Mathf.Pow(Humidity, 1.15f);
+
         humidity = Humidity;
         altitude = Altitude;
         if (Altitude < 0.05) return BiomeType.DeepOcean;
@@ -281,7 +283,6 @@ public class CellBehaviour : MonoBehaviour
            MeshFilter[] meshFilters = new MeshFilter[TreeAmount];
            CombineInstance[] combine = new CombineInstance[meshFilters.Length];
            TreeHolderObject = new GameObject();
-           this.gameObject.AddComponent<MeshCollider>();
            List<Vector3> TreeTempPoses = new List<Vector3>();
       
            for (int i = 0; i < TreeAmount; i++)
@@ -369,7 +370,6 @@ public class CellBehaviour : MonoBehaviour
            MeshFilter[] meshFilters = new MeshFilter[StoneAmount];
            CombineInstance[] combine = new CombineInstance[meshFilters.Length];
            StoneHolderObject = new GameObject();
-           this.gameObject.AddComponent<MeshCollider>();
            List<Vector3> StoneTempPoses = new List<Vector3>();
            for (int i = 0; i < StoneAmount; i++)
            {
@@ -501,7 +501,9 @@ public class CellBehaviour : MonoBehaviour
 
     public void GenerateTerrain()
     {
-        terrainLoader.LoadTerrain(terrain, TerrainRandomNumber);
+        terrain.Biome = TileBiome;
+        TowersParent = GetComponentInParent<SpawnGrid>().Towers;
+        terrainLoader.LoadTerrain(terrain, TerrainRandomNumber, TowersParent);
 
         for (int i = 0; i < TileProperties.Length; i++)
             TileProperties[i] = terrain.TileTypeCount[i];
