@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8513100193643531659}
   - component: {fileID: 4770034318521422068}
   - component: {fileID: 2931261066113818464}
+  - component: {fileID: 631563891457765224}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -138,15 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Biome: 0
-  TileMaterial:
-  - {fileID: 2100000, guid: a41109e1e3c49ea4fb7c40133e746b24, type: 2}
-  - {fileID: 2100000, guid: 49791d429c83ef84ca97c5190ac0a6c5, type: 2}
-  - {fileID: 2100000, guid: bffd42a96a8a9b9439db0a32402fb19f, type: 2}
-  - {fileID: 2100000, guid: b4303097cb0dcc545a42bc1f34b740f0, type: 2}
-  - {fileID: 2100000, guid: 244ae7a2a0e3dd044ba00ef3adeecfe4, type: 2}
-  - {fileID: 2100000, guid: a4a431afa43b6d94c94592535721d9fd, type: 2}
-  - {fileID: 2100000, guid: e4dbfe7dc23eefb4aaa6a1ddea692d84, type: 2}
-  - {fileID: 2100000, guid: 654ee8462478bba4cadf31dc7096d88d, type: 2}
+  StreamCells: []
   TileTypeCount: 
   OreTowers:
   - {fileID: 536744483184213160, guid: 7228fbaee11aeaf4ea00f387382c0e5d, type: 3}
@@ -195,8 +188,9 @@ MonoBehaviour:
   HasOreType: 
   HasShrubType: 
   HasAnimalType: 
+  CellColors: []
   TowerParent: {fileID: 0}
-  perlinFrequancy: 0.2
+  perlinFrequancy: 0.15
 --- !u!114 &2931261066113818464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,3 +203,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef29e8fab100c4e4d8ed404d4a89e99a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BiomeSeaLevel:
+  - 0.35
+  - 0.1
+  - 0.2
+--- !u!114 &631563891457765224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8513100193643531655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53830238092a3cb4b98ec1f827053f30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentOffset: {x: 0, y: 0}
+  TextureSize: {x: 0, y: 0}
+  PixelSize: {x: 0, y: 0}
+  UVPostition: {x: 0, y: 0}

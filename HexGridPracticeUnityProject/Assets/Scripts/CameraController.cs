@@ -51,6 +51,8 @@ public class CameraController : MonoBehaviour
     Quaternion toRotation;
     bool IsValidTouch = false;
     bool TouchedOnly = false;
+    public GameObject MapParent;
+    bool FirstUpdate = true;
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
@@ -60,12 +62,19 @@ public class CameraController : MonoBehaviour
         ReturnToMapButton.SetActive(false);
         ZoomInButton.GetComponent<Button>().onClick.AddListener(VisitCell);
         ReturnToMapButton.GetComponent<Button>().onClick.AddListener(ReturnToMap);
+
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        if (FirstUpdate)
+        {
+            MapParent = GameObject.Find("Chunk Meshes");
+            FirstUpdate = false;
+        }
+
         if (Input.touchCount > 0)
         {
             if (Input.GetTouch(0).phase == TouchPhase.Began)
@@ -138,7 +147,10 @@ public class CameraController : MonoBehaviour
             }
             else if (FadeTimer < 1.2f)
             {
-                mainCamera.transform.position = Vector3.Lerp(new Vector3(400, 25, -25), new Vector3(400, 15, -15), FadeTimer);
+                if (MapParent)
+                    MapParent.SetActive(false);
+
+                mainCamera.transform.position = Vector3.Lerp(new Vector3(400, 35, -35), new Vector3(400, 25, -25), FadeTimer);
                 mainCamera.transform.rotation = Quaternion.Euler(new Vector3(Mathf.Lerp(30f, 50, FadeTimer), 0, 0));
                 BlackFade.GetComponent<Image>().color = new Color(0, 0, 0, Mathf.Lerp(1, 0, FadeTimer));
                 FadeTimer += Time.deltaTime * 0.5f;
@@ -254,6 +266,7 @@ public class CameraController : MonoBehaviour
     {
         ReturnToMapButton.SetActive(false);
         MainMenuButton.SetActive(true);
+        MapParent.SetActive(true);
         IsViewingInnerCell = false;
         transform.position = LastPos;
         transform.rotation = Quaternion.Euler(LastRot);

@@ -9,13 +9,16 @@ public class TerrainLoader : MonoBehaviour
 
     // Hex Properties
     int CellArrayIndex = 0;
-    float HexScale = .57f;
+    float HexScale = 1.14f;
     public int GridSize = 10;
     public List<List<GameObject>> CellObjects;
     public List<List<Cell>> Cells;
     GameObject SmallCellsParent;
+    public List<Vector2> TilePostition;
+    int tempint = 0;
     private void Start()
     {
+        TilePostition = new List<Vector2>();
         SmallCellsParent = new GameObject();
         SmallCellsParent.name = "Inner Cells";
         SmallCellsParent.transform.parent = transform;
@@ -31,7 +34,8 @@ public class TerrainLoader : MonoBehaviour
             for (int r = 0; r < CellObjects[q].Count; r++)
             {
                 Cells[q].Add(CellObjects[q][r].GetComponent<Cell>());
-                Cells[q][r].TilePostition = new Vector2(q, r);
+                Cells[q][r].TilePostition = TilePostition[tempint];
+                tempint++;
             }
         }
     }
@@ -72,6 +76,8 @@ public class TerrainLoader : MonoBehaviour
         go.transform.position = new Vector3(posQ + 400, 0, posR);
         go.transform.localScale = new Vector3(1, 1, 1);
         go.transform.name = Q + ", " + R;
+        TilePostition.Add(new Vector2(Q, R));
+
         go.AddComponent<MeshCollider>();
         CellObjects[CellArrayIndex].Add(go);
     }
@@ -112,7 +118,7 @@ public class TerrainLoader : MonoBehaviour
         return cube_distance(ac, bc);
     }
 
-    Cell GetCellByPos(int x, int y)
+    public Cell GetCellByPos(int x, int y)
     {
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {

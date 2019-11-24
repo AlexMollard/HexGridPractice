@@ -58,7 +58,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4b569879128d71646b67b639ed6040ed, type: 3}
+  - {fileID: 2100000, guid: f26b042f35ed9354596d40b4c7bab468, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,6 +91,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TilePostition: {x: 0, y: 0}
+  CellType: 0
+  TowerType: 0
+  TowerIndex: 0
   hasTower: 0
   Tower: 
   TowerObject: {fileID: 0}
+  Humidity: 0
+  Altitude: 0

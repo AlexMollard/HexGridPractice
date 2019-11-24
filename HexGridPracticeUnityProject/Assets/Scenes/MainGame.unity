@@ -939,7 +939,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 666396216}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
   m_LocalScale: {x: 200, y: 1, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1116,6 +1116,7 @@ GameObject:
   - component: {fileID: 1054595209}
   - component: {fileID: 1054595210}
   - component: {fileID: 1054595211}
+  - component: {fileID: 1054595212}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -1177,6 +1178,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Tile: {fileID: 4403010692264838784, guid: 6760908bc5825f441af1f766450ec973, type: 3}
   GridSize: 10
+  TilePostition: []
+--- !u!114 &1054595212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054595208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 756532a81e9929449974736f94dce17e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terrainLoader: {fileID: 0}
+  terrainBehavior: {fileID: 0}
 --- !u!1 &1060152178
 GameObject:
   m_ObjectHideFlags: 0
@@ -1708,6 +1724,7 @@ MonoBehaviour:
   ZoomInButton: {fileID: 418977771}
   BlackFade: {fileID: 1297487409}
   ReturnToMapButton: {fileID: 2127408639}
+  MapParent: {fileID: 0}
 --- !u!20 &1687258584
 Camera:
   m_ObjectHideFlags: 0
