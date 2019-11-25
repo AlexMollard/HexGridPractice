@@ -5,33 +5,44 @@ using UnityEngine;
 public class UVScroller : MonoBehaviour
 {
     public Vector2 CurrentOffset;
+    public Vector2 ImageSize;
     public Vector2 TextureSize;
-    public Vector2 PixelSize = new Vector2(0,0);
-    public Vector2 UVPostition = new Vector2(0, 0);
+    public Vector2 UVPostition;
 
 
-    public void SetTexture(float cellType, float Humidity, Material material, bool isWater)
+    public void SetTexture(float cellType, float Humidity, bool isWater, GameObject cell)
     {
-        TextureSize = new Vector2(material.GetTexture("_MainTex").width, material.GetTexture("_MainTex").height);
-        
-        PixelSize.y = 1 / TextureSize.y;
-        PixelSize.x = 1 / TextureSize.x;
+        Mesh mesh = cell.GetComponent<MeshFilter>().mesh;
+        Vector3[] vertices = mesh.vertices;
+        Vector3[] normals = mesh.normals;
 
-        if (!isWater)
-            Humidity = Mathf.Clamp(Humidity * 1.33f,0,1);
+        List<Vector2> uvs = new List<Vector2>();
 
-        // Refrence for the rounding
-        //=ROUND(A1/0.125,0)*0.125
-        //--------------------------
+        mesh.GetUVs(0, uvs);
 
-        Humidity = ((Mathf.Round(((Humidity * (TextureSize.x - 1)) * PixelSize.x) / 0.0125f) * 0.0125f) - 1) * -1;
+        ImageSize = new Vector2(cell.GetComponent<Renderer>().sharedMaterial.GetTexture("_MainTex").width, cell.GetComponent<Renderer>().sharedMaterial.GetTexture("_MainTex").height);
 
-        cellType = -1 - cellType;
-        cellType = Mathf.Round((cellType * PixelSize.y) / 0.125f) * 0.125f;
 
-        UVPostition = new Vector2(Humidity, cellType);
+        //if (!isWater)
+        //    Humidity = Mathf.Clamp(Humidity * 1.33f,0,1);
 
-        CurrentOffset = (UVPostition);
-        material.SetTextureOffset("_MainTex", CurrentOffset);
+        //Humidity = ((Mathf.Round(((Humidity * (TextureSize.x - 1)) * PixelSize.x) / PixelSize.x) * PixelSize.x) - 1) * -1;
+        //cellType = -1 - cellType;
+        //cellType = Mathf.Round((cellType * PixelSize.y) / PixelSize.y) * PixelSize.y;
+
+        //CurrentOffset = (UVPostition);
+        //cell.GetComponent<Renderer>().material.SetTextureOffset("_MainTex", CurrentOffset);
+
+
+        TextureSize = new Vector2(1.0f / 32.0f, 1.0f / 32.0f);
+        UVPostition.x = TextureSize.x * Humidity;
+        UVPostition.y = TextureSize.y * cellType;
+
+        for (var i = 0; i < uvs.Count; i++)
+        {
+            uvs[i] = UVPostition;
+        }
+
+        mesh.SetUVs(0, uvs);
     }
 }

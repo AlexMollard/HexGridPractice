@@ -91,7 +91,7 @@ public class TerrainBehavior : MonoBehaviour
             }
         }
 
-        GenerateRivers(5, biomeManager.BiomeSeaLevel[(int)Biome]);
+        GenerateRivers(biomeManager.BiomeSeaLevel[(int)Biome]);
 
         for (int i = 0; i < TileTypeCount.Length; i++)
         {
@@ -205,16 +205,7 @@ public class TerrainBehavior : MonoBehaviour
             {
                 if (Cells[q][r].CellType != BiomeManager.CellType.Water)
                 {
-                   GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, Cells[q][r].Humidity, CellObjects[q][r].GetComponent<Renderer>().material, false);
-
-                   // Color Shade = new Color(0, 0, 0);
-                   //
-                   // float R = CellColors[(int)Cells[q][r].CellType].r + Cells[q][r].Humidity;
-                   // float G = CellColors[(int)Cells[q][r].CellType].g + Cells[q][r].Humidity;
-                   // float B = CellColors[(int)Cells[q][r].CellType].b + Cells[q][r].Humidity;
-                   // Shade += new Color(R, G, B);
-                   //
-                   // CellObjects[q][r].GetComponent<Renderer>().material.color = Shade;
+                   GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, Cells[q][r].Humidity, false, CellObjects[q][r]);
 
                 }
             }
@@ -227,57 +218,84 @@ public class TerrainBehavior : MonoBehaviour
                 if (Cells[q][r].CellType == BiomeManager.CellType.Water)
                 {
                     #region Getting Neighbours
-
+                    List<float> WaterLevels = new List<float>();
                     float waterNeighbours = 0;
+                    float normalWaterLevel = 0;
                     Cell[] neighbour = new Cell[6];
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y)) != null)
                     {
                         if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y)).CellType == BiomeManager.CellType.Water)
+                        {
+                            neighbour[0] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y));
                             waterNeighbours++;
+                        }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y + 1)) != null)
                     {
                         if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y + 1)).CellType == BiomeManager.CellType.Water)
+                        {
+                            neighbour[1] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y + 1));
                             waterNeighbours++;
+                        }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y + 1)) != null)
                     {
                         if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y + 1)).CellType == BiomeManager.CellType.Water)
+                        {
+                            neighbour[2] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y + 1));
                             waterNeighbours++;
+                        }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y)) != null)
                     {
                         if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y)).CellType == BiomeManager.CellType.Water)
+                        {
+                            neighbour[3] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y));
                             waterNeighbours++;
+                        }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y - 1)) != null)
                     {
                         if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y - 1)).CellType == BiomeManager.CellType.Water)
+                        {
+                            neighbour[4] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y - 1));
                             waterNeighbours++;
+                        }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y - 1)) != null)
                     {
                         if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y - 1)).CellType == BiomeManager.CellType.Water)
+                        {
+                            neighbour[5] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y - 1));
                             waterNeighbours++;
+                        }
                     }
+
                     #endregion
 
-                    float waterDepth = Mathf.Lerp(0, 1, waterNeighbours / 6f) / 4;
-                    //
-                    //float R = CellColors[(int)Cells[q][r].CellType].r - waterDepth;
-                    //float G = CellColors[(int)Cells[q][r].CellType].g - waterDepth;
-                    //float B = CellColors[(int)Cells[q][r].CellType].b - waterDepth;
-                    //
-                    //Color Shade = new Color(R, G, B);
-                    //CellObjects[q][r].GetComponent<Renderer>().material.color = Shade;
 
-                    GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, waterDepth * -1, CellObjects[q][r].GetComponent<Renderer>().material, true);
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (neighbour[i])
+                            WaterLevels.Add(neighbour[i].transform.localScale.y);
+                    }
+
+                    for (int v = 0; v < WaterLevels.Count; v++)
+                        normalWaterLevel += WaterLevels[v];
+
+                    normalWaterLevel /= WaterLevels.Count;
+
+                    Cells[q][r].transform.localScale = new Vector3(2, Mathf.Clamp(normalWaterLevel * 0.95f,0.1f,10f), 2);
+
+                    float waterDepth = Mathf.Lerp(0, 1, waterNeighbours / 6f) / 4;
+
+                    GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, waterDepth * -1, true, CellObjects[q][r]);
 
 
                 }
@@ -285,10 +303,12 @@ public class TerrainBehavior : MonoBehaviour
         }
     }
 
-    public void GenerateRivers(int RiverCount, float SeaLevel)
+    public void GenerateRivers(float SeaLevel)
     {
+        int RiverCount = 0;
+
         if (Biome == CellBehaviour.BiomeType.Taiga)
-            RiverCount = 10;
+            RiverCount = 1;
         else
             RiverCount = 1;
 
@@ -306,7 +326,6 @@ public class TerrainBehavior : MonoBehaviour
                 }
             }
         }
-
 
         GameObject[] HighestTile = new GameObject[RiverCount];
         Vector2 HigestTilePos = new Vector2(0, 0);

@@ -12,7 +12,7 @@ public class BiomeManager : MonoBehaviour
     public enum ShrubType { BlueBerries, HaircapMoss, Cloudberry, RedBerry, Cactus, WaxMyrtle };
     public enum AnimalType { Cow, Sheep, Deer, Wolf, Snake, Goat };
 
-    public float[] BiomeSeaLevel = {0.35f,0.1f,0.2f};
+    public float[] BiomeSeaLevel = {0.05f,0.1f,0.2f};
 
     public Cell Taiga(Cell cell, int seed)
     {
