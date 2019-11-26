@@ -5,9 +5,9 @@ using UnityEngine;
 public class BiomeManager : MonoBehaviour
 {
     //public enum BiomeType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
-    public enum CellType { Water, Sand, Dirt, Grass, Stone, Snow, Ice, Lava };
+    public enum CellType { Water, Sand, Dirt, Grass, Stone, Snow, Ice, Lava };  //Need to add oil
     public enum TowerType {Ore,Tree,Shrub,Animal};
-    public enum OreType { Lipidolite, RockSalt, Carnallite, Limestone, Cuprites, Bauxite, Zencite, Galena, Magnetite, Gold, Coal, Oil};
+    public enum OreType { Lipidolite, RockSalt, Carnallite, Limestone, Cuprites, Bauxite, Zencite, Galena, Magnetite, Gold, Coal, Oil}; // need to remove oil
     public enum TreeType { Conifer, Deciduous, Spruce, Acacia, SnowPine, RubberTree, JoshuaTree, PaloVerde, Cedar, Oak, Maple, CorkTree, ManGroves, BlackWood, BurntTree, KapokTree, Ceiba, Bamboo };
     public enum ShrubType { BlueBerries, HaircapMoss, Cloudberry, RedBerry, Cactus, WaxMyrtle };
     public enum AnimalType { Cow, Sheep, Deer, Wolf, Snake, Goat };

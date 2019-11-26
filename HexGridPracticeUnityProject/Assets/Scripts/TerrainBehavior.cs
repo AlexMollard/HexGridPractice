@@ -21,7 +21,6 @@ public class TerrainBehavior : MonoBehaviour
     public bool[] HasShrubType;
     public bool[] HasAnimalType;
     public Color[] CellColors;
-    float timer = 0.0f;
     public GameObject TowerMeshParent;
 
     public GameObject TowerParent;

@@ -45,11 +45,10 @@ public class CellBehaviour : MonoBehaviour
     bool HasStones = false;
     bool HasSnow = false;
     public float[] TileProperties;
-    float HeightMultiplier = 1.65f;
+
     // Terrain
     public float[,] InnerTileNoise;
     float TerrainRandNum;
-    float TerrainFrequancy = 0.03f;
     float PowValue = 2.03f;
     SmallTile[,] InnerTile;
     public TerrainBehavior terrain;

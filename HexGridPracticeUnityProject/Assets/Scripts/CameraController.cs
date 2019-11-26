@@ -35,6 +35,8 @@ public class CameraController : MonoBehaviour
     public PieGraphManager Graph;
     public GameObject InfoCanvas;
     public GameObject MainMenuButton;
+    public GameObject FPSObject;
+    TextMeshProUGUI FPS;
 
     public static bool BlockedByUI;
     public GameObject SelectedCell;
@@ -54,6 +56,11 @@ public class CameraController : MonoBehaviour
     public GameObject MapParent;
     public GameObject gameController;
     bool FirstUpdate = true;
+    int frameCount = 0;
+    double nextUpdate = 0.0;
+    double fps = 0.0;
+    double dt = 0.0;
+    double updateRate = 4.0;  // 4 updates per sec.
     private void Start()
     {
         RB = GetComponent<Rigidbody>();
@@ -63,13 +70,24 @@ public class CameraController : MonoBehaviour
         ReturnToMapButton.SetActive(false);
         ZoomInButton.GetComponent<Button>().onClick.AddListener(VisitCell);
         ReturnToMapButton.GetComponent<Button>().onClick.AddListener(ReturnToMap);
-
+        FPS = FPSObject.GetComponent<TextMeshProUGUI>();
+        nextUpdate = Time.time;
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        frameCount++;
+        dt += Time.deltaTime;
+        if (dt > 1.0 / updateRate)
+        {
+            fps = frameCount / dt;
+            FPS.text = "Fps: " + Mathf.Round((float)fps);
+            frameCount = 0;
+            dt -= 1.0 / updateRate;
+        }
+
         if (FirstUpdate)
         {
             MapParent = GameObject.Find("Chunk Meshes");
