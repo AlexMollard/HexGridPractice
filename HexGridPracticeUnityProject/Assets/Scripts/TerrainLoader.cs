@@ -15,6 +15,7 @@ public class TerrainLoader : MonoBehaviour
     public List<List<Cell>> Cells;
     GameObject SmallCellsParent;
     public List<Vector2> TilePostition;
+    GameObject MeshParent;
     int tempint = 0;
     private void Start()
     {
@@ -42,9 +43,42 @@ public class TerrainLoader : MonoBehaviour
 
     public void LoadTerrain(TerrainBehavior terrain, float randNumber, GameObject TowersParent)
     {
+        if (CurrentTerrainBehavior)
+            Destroy(CurrentTerrainBehavior.TowerMeshParent);
+
         CurrentTerrainBehavior = terrain;
+        //CurrentTerrainBehavior.Biome = GetComponent<CellBehaviour>().TileBiome;
+
         CurrentTerrainBehavior.TowerParent = TowersParent;
         CurrentTerrainBehavior.GenerateTerrain(randNumber, CellObjects, Cells, GridSize);
+
+        if (MeshParent)
+        {
+            Destroy(MeshParent);
+        }
+
+            MeshParent = new GameObject();
+            MeshParent.AddComponent<MeshRenderer>();
+            MeshParent.AddComponent<MeshFilter>();
+            MeshFilter[] meshFilters = SmallCellsParent.GetComponentsInChildren<MeshFilter>();
+            CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+
+            int i = 0;
+            while (i < meshFilters.Length)
+            {
+                combine[i].mesh = meshFilters[i].sharedMesh;
+                combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+                meshFilters[i].gameObject.GetComponent<MeshRenderer>().enabled = false;
+
+                i++;
+            }
+            MeshParent.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+            MeshParent.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+            MeshParent.transform.GetComponent<Renderer>().material = meshFilters[0].gameObject.GetComponent<Renderer>().material;
+            MeshParent.transform.gameObject.SetActive(true);
+
+
+
     }
 
     #region Hex Stuff

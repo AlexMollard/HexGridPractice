@@ -59,6 +59,7 @@ public class SpawnGrid : MonoBehaviour
     public GameObject Towers;
     public GameObject ChunkParent;
     GameObject BigCellParent;
+    public bool IsOnMap = true;
     public void Awake()
     {
         BigCellParent = new GameObject();
@@ -103,9 +104,9 @@ public class SpawnGrid : MonoBehaviour
 
     private void Update()
     {
-
-
-        if (Camera.main.transform.position.y < 20 && isReady)
+        if (IsOnMap)
+        {
+            if (Camera.main.transform.position.y < 20 && isReady)
         {
             FirstOff = false;
             iteration++;
@@ -172,7 +173,7 @@ public class SpawnGrid : MonoBehaviour
             }
 
         }
-        else if (!FirstOff)
+            else if (!FirstOff)
         {
             for (int q = 0; q < HexSize; q++)
             {
@@ -183,7 +184,7 @@ public class SpawnGrid : MonoBehaviour
             }
             FirstOff = true;
         }
-        else
+            else
         {
             timer += Time.deltaTime * 0.5f;
             startupScale = new Vector3(1, Mathf.Clamp(Mathf.Lerp(0,1,timer), 0, 1), 1);
@@ -201,6 +202,9 @@ public class SpawnGrid : MonoBehaviour
                 isReady = true;
             }
         }
+        }
+
+
     }
 
     void GenerateMainTerrainPerlinNoise()

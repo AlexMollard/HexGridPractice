@@ -219,7 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53830238092a3cb4b98ec1f827053f30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentOffset: {x: 0, y: 0}
+  ImageSize: {x: 0, y: 0}
   TextureSize: {x: 0, y: 0}
-  PixelSize: {x: 0, y: 0}
-  UVPostition: {x: 0, y: 0}
+  OriginalUVS: []
+  Hexagon: {fileID: 4300000, guid: 4b569879128d71646b67b639ed6040ed, type: 3}

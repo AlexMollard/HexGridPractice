@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class UVScroller : MonoBehaviour
 {
-    public Vector2 CurrentOffset;
     public Vector2 ImageSize;
     public Vector2 TextureSize;
-    public Vector2 UVPostition;
+    public List<Vector2> OriginalUVS = new List<Vector2>();
+    public Mesh Hexagon;
 
+    private void Start()
+    {
+        OriginalUVS = new List<Vector2>();
+        Hexagon.GetUVs(0, OriginalUVS);
+    }
 
     public void SetTexture(float cellType, float Humidity, bool isWater, GameObject cell)
     {
@@ -20,27 +25,24 @@ public class UVScroller : MonoBehaviour
 
         mesh.GetUVs(0, uvs);
 
+        if(!isWater)
+            Humidity /= 2;
+
         ImageSize = new Vector2(cell.GetComponent<Renderer>().sharedMaterial.GetTexture("_MainTex").width, cell.GetComponent<Renderer>().sharedMaterial.GetTexture("_MainTex").height);
 
+        int NumberOfSubTexturesAcross = 20;
 
-        //if (!isWater)
-        //    Humidity = Mathf.Clamp(Humidity * 1.33f,0,1);
-
-        //Humidity = ((Mathf.Round(((Humidity * (TextureSize.x - 1)) * PixelSize.x) / PixelSize.x) * PixelSize.x) - 1) * -1;
-        //cellType = -1 - cellType;
-        //cellType = Mathf.Round((cellType * PixelSize.y) / PixelSize.y) * PixelSize.y;
-
-        //CurrentOffset = (UVPostition);
-        //cell.GetComponent<Renderer>().material.SetTextureOffset("_MainTex", CurrentOffset);
-
-
-        TextureSize = new Vector2(1.0f / 32.0f, 1.0f / 32.0f);
-        UVPostition.x = TextureSize.x * Humidity;
-        UVPostition.y = TextureSize.y * cellType;
+        float horizontalOffset = Humidity * 32;
+        float verticalOffset = cellType - System.Enum.GetNames(typeof(BiomeManager.CellType)).Length + NumberOfSubTexturesAcross;
 
         for (var i = 0; i < uvs.Count; i++)
         {
-            uvs[i] = UVPostition;
+            Vector2 start = OriginalUVS[i];
+
+            start /= NumberOfSubTexturesAcross;
+            start += new Vector2(horizontalOffset / NumberOfSubTexturesAcross, verticalOffset / NumberOfSubTexturesAcross);
+
+            uvs[i] = start;
         }
 
         mesh.SetUVs(0, uvs);

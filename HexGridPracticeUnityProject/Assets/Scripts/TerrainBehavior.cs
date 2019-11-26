@@ -9,6 +9,7 @@ public class TerrainBehavior : MonoBehaviour
     BiomeManager biomeManager;
     public List<Cell> StreamCells;
     public List<List<Cell>> Cells;
+    int RiverCount = 0;
 
     public int[] TileTypeCount;
     public GameObject[] OreTowers;
@@ -21,6 +22,7 @@ public class TerrainBehavior : MonoBehaviour
     public bool[] HasAnimalType;
     public Color[] CellColors;
     float timer = 0.0f;
+    public GameObject TowerMeshParent;
 
     public GameObject TowerParent;
 
@@ -76,6 +78,7 @@ public class TerrainBehavior : MonoBehaviour
 
     public void GenerateTerrain(float randomNumber, List<List<GameObject>> gameObjects, List<List<Cell>> cells, int gridSize)
     {
+        List<GameObject> Towers = new List<GameObject>();
         CellObjects = gameObjects;
         Cells = cells;
         GridSize = gridSize;
@@ -190,6 +193,7 @@ public class TerrainBehavior : MonoBehaviour
                     Cells[q][r].hasTower = true;
                     Cells[q][r].TowerObject.transform.position = new Vector3(CellObjects[q][r].transform.position.x, (CellObjects[q][r].transform.localScale.y / 5), CellObjects[q][r].transform.position.z);
                     Cells[q][r].TowerObject.transform.parent = TowerParent.transform;
+                    Towers.Add(Cells[q][r].TowerObject);
                 }
                 else
                 {
@@ -205,8 +209,7 @@ public class TerrainBehavior : MonoBehaviour
             {
                 if (Cells[q][r].CellType != BiomeManager.CellType.Water)
                 {
-                   GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, Cells[q][r].Humidity, false, CellObjects[q][r]);
-
+                    GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, (Cells[q][r].Humidity - 1) * -1, false, CellObjects[q][r]);
                 }
             }
         }
@@ -221,66 +224,117 @@ public class TerrainBehavior : MonoBehaviour
                     List<float> WaterLevels = new List<float>();
                     float waterNeighbours = 0;
                     float normalWaterLevel = 0;
-                    Cell[] neighbour = new Cell[6];
+                    List<Cell> neighbour = new List<Cell>();
+                    List<Cell> NotWaterNeighbour = new List<Cell>();
+                    bool FoundNonWater = false;
+
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y)) != null)
                     {
-                        if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y)).CellType == BiomeManager.CellType.Water)
+                        neighbour.Add(GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y)));
+                        if (neighbour[neighbour.Count - 1].CellType == BiomeManager.CellType.Water)
                         {
-                            neighbour[0] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y));
                             waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
                         }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y + 1)) != null)
                     {
-                        if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y + 1)).CellType == BiomeManager.CellType.Water)
+                        neighbour.Add(GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y + 1)));
+                        if (neighbour[neighbour.Count - 1].CellType == BiomeManager.CellType.Water)
                         {
-                            neighbour[1] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y + 1));
                             waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
                         }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y + 1)) != null)
                     {
-                        if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y + 1)).CellType == BiomeManager.CellType.Water)
+                        neighbour.Add(GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y + 1)));
+                        if (neighbour[neighbour.Count - 1].CellType == BiomeManager.CellType.Water)
                         {
-                            neighbour[2] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y + 1));
                             waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
                         }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y)) != null)
                     {
-                        if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y)).CellType == BiomeManager.CellType.Water)
+                        neighbour.Add(GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y)));
+                        if (neighbour[neighbour.Count - 1].CellType == BiomeManager.CellType.Water)
                         {
-                            neighbour[3] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x - 1, Cells[q][r].TilePostition.y));
                             waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
                         }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y - 1)) != null)
                     {
-                        if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y - 1)).CellType == BiomeManager.CellType.Water)
+                        neighbour.Add(GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y - 1)));
+                        if (neighbour[neighbour.Count - 1].CellType == BiomeManager.CellType.Water)
                         {
-                            neighbour[4] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x, Cells[q][r].TilePostition.y - 1));
                             waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
                         }
                     }
 
                     if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y - 1)) != null)
                     {
-                        if (GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y - 1)).CellType == BiomeManager.CellType.Water)
+                        neighbour.Add(GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y - 1)));
+                        if (neighbour[neighbour.Count - 1].CellType == BiomeManager.CellType.Water)
                         {
-                            neighbour[5] = GetCellByPos(new Vector2(Cells[q][r].TilePostition.x + 1, Cells[q][r].TilePostition.y - 1));
                             waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
                         }
                     }
 
                     #endregion
+                    if (FoundNonWater)
+                    {
+                        Cell SmallestNonWaterTile = neighbour[0];
+
+                        for (int i = 0; i < neighbour.Count; i++)
+                            if (neighbour[i].CellType != BiomeManager.CellType.Water)
+                            {
+                                SmallestNonWaterTile = neighbour[i];
+                                FoundNonWater = true;
+                                break;
+                            }
+
+                        for (int i = 0; i < neighbour.Count; i++)
+                        {
+                            if (neighbour[i])
+                                if (neighbour[i].CellType != BiomeManager.CellType.Water)
+                                {
+                                    if (neighbour[i].Altitude < SmallestNonWaterTile.Altitude)
+                                        SmallestNonWaterTile = neighbour[i];
+                                }
+                        }
+
+                        Cells[q][r].transform.localScale = new Vector3(2, Mathf.Clamp(SmallestNonWaterTile.Altitude * 0.1f, 0.1f, 10f), 2);
+                    }
 
 
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 0; i < neighbour.Count; i++)
                     {
                         if (neighbour[i])
                             WaterLevels.Add(neighbour[i].transform.localScale.y);
@@ -291,22 +345,49 @@ public class TerrainBehavior : MonoBehaviour
 
                     normalWaterLevel /= WaterLevels.Count;
 
-                    Cells[q][r].transform.localScale = new Vector3(2, Mathf.Clamp(normalWaterLevel * 0.95f,0.1f,10f), 2);
+                    Cells[q][r].transform.localScale = new Vector3(2, Mathf.Clamp(normalWaterLevel * 0.95f, 0.1f, 10f), 2);
 
                     float waterDepth = Mathf.Lerp(0, 1, waterNeighbours / 6f) / 4;
 
-                    GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, waterDepth * -1, true, CellObjects[q][r]);
+                    GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, waterDepth, true, CellObjects[q][r]);
 
 
                 }
             }
         }
+
+        if (TowerMeshParent)
+        {
+            Destroy(TowerMeshParent);
+        }
+
+        TowerMeshParent = new GameObject();
+        TowerMeshParent.AddComponent<MeshRenderer>();
+        TowerMeshParent.AddComponent<MeshFilter>();
+        MeshFilter[] meshFilters = new MeshFilter[Towers.Count];
+        for (int i = 0; i < Towers.Count; i++)
+        {
+            meshFilters[i] = Towers[i].GetComponent<MeshFilter>();
+        }
+
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        int m = 0;
+        while (m < meshFilters.Length)
+        {
+            combine[m].mesh = meshFilters[m].sharedMesh;
+            combine[m].transform = meshFilters[m].transform.localToWorldMatrix;
+            meshFilters[m].gameObject.GetComponent<MeshRenderer>().enabled = false;
+
+            m++;
+        }
+        TowerMeshParent.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+        TowerMeshParent.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+        TowerMeshParent.transform.GetComponent<Renderer>().material = meshFilters[0].gameObject.GetComponent<Renderer>().material;
+        TowerMeshParent.transform.gameObject.SetActive(true);
     }
 
     public void GenerateRivers(float SeaLevel)
     {
-        int RiverCount = 0;
-
         if (Biome == CellBehaviour.BiomeType.Taiga)
             RiverCount = 1;
         else
@@ -329,15 +410,19 @@ public class TerrainBehavior : MonoBehaviour
 
         GameObject[] HighestTile = new GameObject[RiverCount];
         Vector2 HigestTilePos = new Vector2(0, 0);
-        int RiverLength = 30;
+        int RiverLength = 300;
 
         for (int i = 0; i < HighestTile.Length; i++)
         {
+            int LoopDestroyer = 0;
             int x = 0;
             int z = 0;
             do {
+                if (LoopDestroyer > GridSize)
+                    break;
                x = UnityEngine.Random.Range(0, GridSize * 2 + 1);
                z = UnityEngine.Random.Range(0, CellObjects[x].Count);
+                LoopDestroyer++;
             } while (Cells[x][z].CellType != BiomeManager.CellType.Water);
 
             HighestTile[i] = CellObjects[x][z];
@@ -415,31 +500,15 @@ public class TerrainBehavior : MonoBehaviour
                     }
 
                     bool[] IsGonnaBeWater = new bool[6];
-                    List<float> WaterLevels = new List<float>();
-                    float normalWaterLevel = 0;
                     for (int v = 0; v < 6; v++)
                     {
                         IsGonnaBeWater[v] = (UnityEngine.Random.value < 0.5f ? true : false);
 
                         if (neighbour[v] && IsGonnaBeWater[v])
                         {
-                            WaterLevels.Add(neighbour[v].transform.localScale.y);
                             neighbour[v].CellType = BiomeManager.CellType.Water;
                         }
                     }
-
-                    WaterLevels.Add(HighestTile[q].transform.localScale.y);
-
-                    for (int v = 0; v < WaterLevels.Count; v++)
-                        normalWaterLevel += WaterLevels[v];
-
-                    normalWaterLevel /= WaterLevels.Count;
-
-                    for (int v = 0; v < 6; v++)
-                        if (neighbour[v] && IsGonnaBeWater[v])
-                            neighbour[v].transform.localScale = new Vector3(2, normalWaterLevel, 2);
-
-                    HighestTile[q].transform.localScale = new Vector3(2, normalWaterLevel, 2);
                 }
                 else if (NextHighestTile.GetComponent<Cell>().CellType == BiomeManager.CellType.Water)
                 {
@@ -447,27 +516,13 @@ public class TerrainBehavior : MonoBehaviour
                 }
                 else if (NextHighestTile.gameObject == HighestTile[q])
                 {
-                    List<float> WaterLevels = new List<float>();
-                    float normalWaterLevel = 0;
                     for (int v = 0; v < 6; v++)
                     {
                         if (neighbour[v])
                         {
-                            WaterLevels.Add(neighbour[v].transform.localScale.y);
                             neighbour[v].CellType = BiomeManager.CellType.Water;
                         }
                     }
-
-                    WaterLevels.Add(HighestTile[q].transform.localScale.y);
-
-                    for (int v = 0; v < WaterLevels.Count; v++)
-                        normalWaterLevel += WaterLevels[v];
-
-                    normalWaterLevel /= WaterLevels.Count;
-
-                    for (int v = 0; v < 6; v++)
-                        if (neighbour[v])
-                            neighbour[v].transform.localScale = new Vector3(2, normalWaterLevel, 2);
 
                     break;
                 }

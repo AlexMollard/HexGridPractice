@@ -18,6 +18,7 @@ public class GenerateHexMesh : MonoBehaviour
     }
     private void Update()
     {
+        
         scroller.SetTexture(CellType, Humidity, false, gameObject);
 
         //Mesh mesh = GetComponent<MeshFilter>().mesh;

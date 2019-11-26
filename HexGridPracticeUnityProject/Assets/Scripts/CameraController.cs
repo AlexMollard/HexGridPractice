@@ -52,6 +52,7 @@ public class CameraController : MonoBehaviour
     bool IsValidTouch = false;
     bool TouchedOnly = false;
     public GameObject MapParent;
+    public GameObject gameController;
     bool FirstUpdate = true;
     private void Start()
     {
@@ -225,12 +226,17 @@ public class CameraController : MonoBehaviour
                         Graph.cell = hit.transform.GetComponent<CellBehaviour>();
                         InfoCanvas.SetActive(true);
                         Graph.UpdateChart();
+                        gameController.GetComponent<SpawnGrid>().IsOnMap = false;
                     }
                 }
                 else if (!BlockedByUI)
                 {
                     InfoCanvas.SetActive(false);
                 }
+            }
+            else
+            {
+                gameController.GetComponent<SpawnGrid>().IsOnMap = true;
             }
         }
 
