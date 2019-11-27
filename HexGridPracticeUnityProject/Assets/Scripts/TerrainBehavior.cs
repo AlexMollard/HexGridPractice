@@ -128,8 +128,6 @@ public class TerrainBehavior : MonoBehaviour
 
                 if (Biome == CellBehaviour.BiomeType.Taiga)
                     cells[q][r] = biomeManager.Taiga(cells[q][r], (int)randomNumber);
-                else if (Biome == CellBehaviour.BiomeType.DeepOcean)
-                    cells[q][r] = biomeManager.DeepOcean(cells[q][r], (int)randomNumber);
                 else if (Biome == CellBehaviour.BiomeType.Ocean)
                     cells[q][r] = biomeManager.Ocean(cells[q][r], (int)randomNumber);
                 else if (Biome == CellBehaviour.BiomeType.Beach)
@@ -208,7 +206,7 @@ public class TerrainBehavior : MonoBehaviour
             {
                 if (Cells[q][r].CellType != BiomeManager.CellType.Water)
                 {
-                    GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, (Cells[q][r].Humidity - 1) * -1, false, CellObjects[q][r]);
+                    GetComponent<UVScroller>().SetTexture(ObjectType.Cell, CellObjects[q][r], (float)Cells[q][r].CellType, (Cells[q][r].Humidity - 1) * -1);
                 }
             }
         }
@@ -348,7 +346,7 @@ public class TerrainBehavior : MonoBehaviour
 
                     float waterDepth = Mathf.Lerp(0, 1, waterNeighbours / 6f) / 4;
 
-                    GetComponent<UVScroller>().SetTexture((float)Cells[q][r].CellType, waterDepth, true, CellObjects[q][r]);
+                    GetComponent<UVScroller>().SetTexture(ObjectType.Cell, CellObjects[q][r], (float)Cells[q][r].CellType, waterDepth);
 
 
                 }
@@ -360,29 +358,34 @@ public class TerrainBehavior : MonoBehaviour
             Destroy(TowerMeshParent);
         }
 
-        TowerMeshParent = new GameObject();
-        TowerMeshParent.AddComponent<MeshRenderer>();
-        TowerMeshParent.AddComponent<MeshFilter>();
-        MeshFilter[] meshFilters = new MeshFilter[Towers.Count];
-        for (int i = 0; i < Towers.Count; i++)
+        if (Towers.Count > 0)
         {
-            meshFilters[i] = Towers[i].GetComponent<MeshFilter>();
-        }
+            TowerMeshParent = new GameObject();
+            TowerMeshParent.AddComponent<MeshRenderer>();
+            TowerMeshParent.AddComponent<MeshFilter>();
+            MeshFilter[] meshFilters = new MeshFilter[Towers.Count];
+            for (int i = 0; i < Towers.Count; i++)
+            {
+                meshFilters[i] = Towers[i].GetComponent<MeshFilter>();
+            }
 
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-        int m = 0;
-        while (m < meshFilters.Length)
-        {
-            combine[m].mesh = meshFilters[m].sharedMesh;
-            combine[m].transform = meshFilters[m].transform.localToWorldMatrix;
-            meshFilters[m].gameObject.GetComponent<MeshRenderer>().enabled = false;
 
-            m++;
+
+            CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+            int m = 0;
+            while (m < meshFilters.Length)
+            {
+                combine[m].mesh = meshFilters[m].sharedMesh;
+                combine[m].transform = meshFilters[m].transform.localToWorldMatrix;
+                meshFilters[m].gameObject.GetComponent<MeshRenderer>().enabled = false;
+
+                m++;
+            }
+            TowerMeshParent.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+            TowerMeshParent.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+            TowerMeshParent.transform.GetComponent<Renderer>().material = meshFilters[0].gameObject.GetComponent<Renderer>().material;
+            TowerMeshParent.transform.gameObject.SetActive(true);
         }
-        TowerMeshParent.transform.GetComponent<MeshFilter>().mesh = new Mesh();
-        TowerMeshParent.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-        TowerMeshParent.transform.GetComponent<Renderer>().material = meshFilters[0].gameObject.GetComponent<Renderer>().material;
-        TowerMeshParent.transform.gameObject.SetActive(true);
     }
 
     public void GenerateRivers(float SeaLevel)

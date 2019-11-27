@@ -19,7 +19,6 @@ public class SpawnGrid : MonoBehaviour
 
     // Hex Storage
     public List<List<GameObject>> goCell;
-    public List<List<GameObject>> CellByType;
     public CellBehaviour[][] Cell;
     int CellArrayIndex = 0;
 
@@ -29,6 +28,8 @@ public class SpawnGrid : MonoBehaviour
 
     // Noise Properties
     public float[][] BiomeHumidity;
+    public float[][] Noise;
+    public float[][] Bounds;
 
     // Terrain Noise
     float TerrainRandNum;
@@ -43,9 +44,9 @@ public class SpawnGrid : MonoBehaviour
     public List<GameObject> Trees;
 
     // Temp Variables
-    [Range(0 ,10)]
+    [Range(0, 10)]
     public float PowValue = 6f;
-    [Range(0 ,10)]
+    [Range(0, 10)]
     public float BiomePowValue = 6f;
     public Button menuButton;
     public TextMeshProUGUI tileDisplay;
@@ -60,6 +61,17 @@ public class SpawnGrid : MonoBehaviour
     public GameObject ChunkParent;
     GameObject BigCellParent;
     public bool IsOnMap = true;
+    public Material UVMap;
+    public List<CellBehaviour> StreamCells;
+    //TEXTURE SETTINGS
+    int texWidth = 0;
+    int texHeight = 0;
+ 
+     //MASK SETTINGS
+    float maskThreshold = 2.0f;
+
+    //REFERENCES
+    Texture2D mask;
     public void Awake()
     {
         BigCellParent = new GameObject();
@@ -70,13 +82,7 @@ public class SpawnGrid : MonoBehaviour
         Chunks = new List<GameObject>();
         SnowTrees = new List<GameObject>();
         Trees = new List<GameObject>();
-        CellByType = new List<List<GameObject>>();
         HexSize = GridSize * 2 + 1;
-
-        for (int i = 0; i < 16; i++)
-        {
-            CellByType.Add(new List<GameObject>());
-        }
     }
 
     void Start()
@@ -107,101 +113,101 @@ public class SpawnGrid : MonoBehaviour
         if (IsOnMap)
         {
             if (Camera.main.transform.position.y < 20 && isReady)
-        {
-            FirstOff = false;
-            iteration++;
-            if (iteration == 1)
             {
-                for (int q = 0; q < HexSize / 6; q++)
+                FirstOff = false;
+                iteration++;
+                if (iteration == 1)
                 {
-                    for (int r = 0; r < goCell[q].Count; r++)
+                    for (int q = 0; q < HexSize / 6; q++)
                     {
-                        Cell[q][r].CheckTreeVisable(true);
+                        for (int r = 0; r < goCell[q].Count; r++)
+                        {
+                            Cell[q][r].CheckTreeVisable(true);
+                        }
                     }
                 }
-            }
-            else if (iteration == 2)
-            {
-                for (int q = (HexSize / 6) * 1; q < (HexSize / 6) * 2; q++)
+                else if (iteration == 2)
                 {
-                    for (int r = 0; r < goCell[q].Count; r++)
+                    for (int q = (HexSize / 6) * 1; q < (HexSize / 6) * 2; q++)
                     {
-                        Cell[q][r].CheckTreeVisable(true);
+                        for (int r = 0; r < goCell[q].Count; r++)
+                        {
+                            Cell[q][r].CheckTreeVisable(true);
+                        }
                     }
                 }
-            }
-            else if (iteration == 3)
-            {
-                for (int q = (HexSize / 6) * 2; q < (HexSize / 6) * 3; q++)
+                else if (iteration == 3)
                 {
-                    for (int r = 0; r < goCell[q].Count; r++)
+                    for (int q = (HexSize / 6) * 2; q < (HexSize / 6) * 3; q++)
                     {
-                        Cell[q][r].CheckTreeVisable(true);
+                        for (int r = 0; r < goCell[q].Count; r++)
+                        {
+                            Cell[q][r].CheckTreeVisable(true);
+                        }
                     }
                 }
-            }
-            else if (iteration == 4)
-            {
-                for (int q = (HexSize / 6) * 3; q < (HexSize / 6) * 4; q++)
+                else if (iteration == 4)
                 {
-                    for (int r = 0; r < goCell[q].Count; r++)
+                    for (int q = (HexSize / 6) * 3; q < (HexSize / 6) * 4; q++)
                     {
-                        Cell[q][r].CheckTreeVisable(true);
+                        for (int r = 0; r < goCell[q].Count; r++)
+                        {
+                            Cell[q][r].CheckTreeVisable(true);
+                        }
                     }
                 }
-            }
-            else if (iteration == 5)
-            {
-                for (int q = (HexSize / 6) * 4; q < (HexSize / 6) * 5; q++)
+                else if (iteration == 5)
                 {
-                    for (int r = 0; r < goCell[q].Count; r++)
+                    for (int q = (HexSize / 6) * 4; q < (HexSize / 6) * 5; q++)
                     {
-                        Cell[q][r].CheckTreeVisable(true);
+                        for (int r = 0; r < goCell[q].Count; r++)
+                        {
+                            Cell[q][r].CheckTreeVisable(true);
+                        }
                     }
                 }
-            }
-            else if (iteration == 6)
-            {
-                for (int q = (HexSize / 6) * 5; q < HexSize; q++)
+                else if (iteration == 6)
                 {
-                    for (int r = 0; r < goCell[q].Count; r++)
+                    for (int q = (HexSize / 6) * 5; q < HexSize; q++)
                     {
-                        Cell[q][r].CheckTreeVisable(true);
+                        for (int r = 0; r < goCell[q].Count; r++)
+                        {
+                            Cell[q][r].CheckTreeVisable(true);
+                        }
                     }
+                    iteration = 0;
                 }
-                iteration = 0;
-            }
 
-        }
+            }
             else if (!FirstOff)
-        {
-            for (int q = 0; q < HexSize; q++)
             {
-                for (int r = 0; r < goCell[q].Count; r++)
+                for (int q = 0; q < HexSize; q++)
                 {
-                    Cell[q][r].CheckTreeVisable(false);
+                    for (int r = 0; r < goCell[q].Count; r++)
+                    {
+                        Cell[q][r].CheckTreeVisable(false);
+                    }
                 }
+                FirstOff = true;
             }
-            FirstOff = true;
-        }
             else
-        {
-            timer += Time.deltaTime * 0.5f;
-            startupScale = new Vector3(1, Mathf.Clamp(Mathf.Lerp(0,1,timer), 0, 1), 1);
-            for (int i = 0; i < Chunks.Count; i++)
             {
-                Chunks[i].transform.localScale = startupScale;
-            }
-
-            if (Chunks[0].transform.localScale.y >= 1)
-            {
+                timer += Time.deltaTime * 0.5f;
+                startupScale = new Vector3(1, Mathf.Clamp(Mathf.Lerp(0, 1, timer), 0, 1), 1);
                 for (int i = 0; i < Chunks.Count; i++)
                 {
-                    Chunks[i].transform.localScale = new Vector3(1, 1, 1); ;
+                    Chunks[i].transform.localScale = startupScale;
                 }
-                isReady = true;
+
+                if (Chunks[0].transform.localScale.y >= 1)
+                {
+                    for (int i = 0; i < Chunks.Count; i++)
+                    {
+                        Chunks[i].transform.localScale = new Vector3(1, 1, 1); ;
+                    }
+                    isReady = true;
+                }
             }
-        }
         }
 
 
@@ -210,24 +216,42 @@ public class SpawnGrid : MonoBehaviour
     void GenerateMainTerrainPerlinNoise()
     {
 
+        Noise = new float[GridSize * 2 + 1][];
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {
+            Noise[q] = new float[goCell[q].Count];
             for (int r = 0; r < goCell[q].Count; r++)
             {
                 Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
 
-                float Noise =  Mathf.PerlinNoise((pos.x * TerrainFrequancy + TerrainRandNum), pos.y * TerrainFrequancy + TerrainRandNum);
-                Noise += 0.5f * Mathf.PerlinNoise((2 * pos.x * TerrainFrequancy + TerrainRandNum), 2 * pos.y * TerrainFrequancy + TerrainRandNum);
-                Noise += 0.25f * Mathf.PerlinNoise((4 * pos.x * TerrainFrequancy + TerrainRandNum), 4 * pos.y * TerrainFrequancy + TerrainRandNum);
+                Noise[q][r] = Mathf.PerlinNoise((pos.x * TerrainFrequancy + TerrainRandNum), pos.y * TerrainFrequancy + TerrainRandNum);
+                Noise[q][r] += 0.5f * Mathf.PerlinNoise((2 * pos.x * TerrainFrequancy + TerrainRandNum), 2 * pos.y * TerrainFrequancy + TerrainRandNum);
+                Noise[q][r] += 0.25f * Mathf.PerlinNoise((4 * pos.x * TerrainFrequancy + TerrainRandNum), 4 * pos.y * TerrainFrequancy + TerrainRandNum);
 
-                Noise = Mathf.Pow(Noise, PowValue);
-
-                Cell[q][r].SetTileProperties(Noise, BiomeHumidity[q][r]);
-                CellByType[(int)Cell[q][r].TileBiome].Add(goCell[q][r]);
+                Noise[q][r] = Mathf.Pow(Noise[q][r], PowValue);
             }
         }
     }
 
+
+    void GenerateTexture()
+    {
+        Bounds = new float[GridSize * 2 + 1][];
+        Vector2 maskCenter = new Vector2(0, 0);
+
+        for (int q = 0; q < GridSize * 2 + 1; q++)
+        {
+            Bounds[q] = new float[goCell[q].Count];
+            for (int r = 0; r < goCell[q].Count; r++)
+            { 
+                float distFromCenter = Vector2.Distance(maskCenter, Cell[q][r].TilePostition);
+                float maskPixel = (0.5f - (distFromCenter / goCell[q].Count)) * maskThreshold;
+                Bounds[q][r] = maskPixel;
+                Noise[q][r] += Bounds[q][r];
+            }
+        }
+
+    }
     // Biome Generator
     void GenerateBiomePerlinNoise()
     {
@@ -238,55 +262,393 @@ public class SpawnGrid : MonoBehaviour
             for (int r = 0; r < goCell[q].Count; r++)
             {
                 Vector2 pos = AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y);
-                BiomeHumidity[q][r] = Mathf.Pow(Mathf.PerlinNoise((pos.x * BiomeFrequancy + (TerrainRandNum)) , pos.y * BiomeFrequancy + (TerrainRandNum)), BiomePowValue); 
+                BiomeHumidity[q][r] = Mathf.Pow(Mathf.PerlinNoise((pos.x * BiomeFrequancy + (TerrainRandNum)), pos.y * BiomeFrequancy + (TerrainRandNum)), BiomePowValue);
             }
         }
     }
 
+    public void SetTerrain()
+    {
+        for (int q = 0; q < GridSize * 2 + 1; q++)
+        {
+            for (int r = 0; r < goCell[q].Count; r++)
+            {
+                Cell[q][r].SetTileProperties(Noise[q][r], BiomeHumidity[q][r]);
+            }
+        }
+        
+        GenerateRivers();
+
+        for (int q = 0; q < GridSize * 2 + 1; q++)
+        {
+            for (int r = 0; r < goCell[q].Count; r++)
+            {
+                if (Cell[q][r].TileBiome != CellBehaviour.BiomeType.Ocean)
+                {
+                    CellBehaviour ClosestStream = StreamCells[0];
+
+                    for (int i = 0; i < StreamCells.Count; i++)
+                    {
+                        if (HexDistance(Cell[q][r].TilePostition, StreamCells[i].TilePostition) < HexDistance(Cell[q][r].TilePostition, ClosestStream.TilePostition))
+                        {
+                            ClosestStream = StreamCells[i];
+                        }
+                    }
+                    float DistanceShade = Mathf.Clamp(HexDistance(Cell[q][r].TilePostition, ClosestStream.TilePostition) / 10, 0, 0.9f);
+                    Cell[q][r].humidity = Mathf.Clamp(Cell[q][r].humidity + DistanceShade / 2,0,1);
+                    Cell[q][r].GetComponent<UVScroller>().SetTexture(ObjectType.Biome, Cell[q][r].gameObject, (int)Cell[q][r].TileType, (Cell[q][r].humidity - 1) * -1);
+                }
+
+                if (Cell[q][r].TileBiome == CellBehaviour.BiomeType.Ocean)
+                {
+                    #region Getting Neighbours
+                    List<float> WaterLevels = new List<float>();
+                    float waterNeighbours = 0;
+                    float normalWaterLevel = 0;
+                    List<CellBehaviour> neighbour = new List<CellBehaviour>();
+                    List<CellBehaviour> NotWaterNeighbour = new List<CellBehaviour>();
+                    bool FoundNonWater = false;
+
+
+                    if (GetCellByPos(new Vector2(Cell[q][r].TilePostition.x + 1, Cell[q][r].TilePostition.y)) != null)
+                    {
+                        neighbour.Add(GetCellByPos(new Vector2(Cell[q][r].TilePostition.x + 1, Cell[q][r].TilePostition.y)));
+                        if (neighbour[neighbour.Count - 1].TileBiome == CellBehaviour.BiomeType.Ocean)
+                        {
+                            waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
+                        }
+                    }
+
+                    if (GetCellByPos(new Vector2(Cell[q][r].TilePostition.x, Cell[q][r].TilePostition.y + 1)) != null)
+                    {
+                        neighbour.Add(GetCellByPos(new Vector2(Cell[q][r].TilePostition.x, Cell[q][r].TilePostition.y + 1)));
+                        if (neighbour[neighbour.Count - 1].TileBiome == CellBehaviour.BiomeType.Ocean)
+                        {
+                            waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
+                        }
+                    }
+
+                    if (GetCellByPos(new Vector2(Cell[q][r].TilePostition.x - 1, Cell[q][r].TilePostition.y + 1)) != null)
+                    {
+                        neighbour.Add(GetCellByPos(new Vector2(Cell[q][r].TilePostition.x - 1, Cell[q][r].TilePostition.y + 1)));
+                        if (neighbour[neighbour.Count - 1].TileBiome == CellBehaviour.BiomeType.Ocean)
+                        {
+                            waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
+                        }
+                    }
+
+                    if (GetCellByPos(new Vector2(Cell[q][r].TilePostition.x - 1, Cell[q][r].TilePostition.y)) != null)
+                    {
+                        neighbour.Add(GetCellByPos(new Vector2(Cell[q][r].TilePostition.x - 1, Cell[q][r].TilePostition.y)));
+                        if (neighbour[neighbour.Count - 1].TileBiome == CellBehaviour.BiomeType.Ocean)
+                        {
+                            waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
+                        }
+                    }
+
+                    if (GetCellByPos(new Vector2(Cell[q][r].TilePostition.x, Cell[q][r].TilePostition.y - 1)) != null)
+                    {
+                        neighbour.Add(GetCellByPos(new Vector2(Cell[q][r].TilePostition.x, Cell[q][r].TilePostition.y - 1)));
+                        if (neighbour[neighbour.Count - 1].TileBiome == CellBehaviour.BiomeType.Ocean)
+                        {
+                            waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
+                        }
+                    }
+
+                    if (GetCellByPos(new Vector2(Cell[q][r].TilePostition.x + 1, Cell[q][r].TilePostition.y - 1)) != null)
+                    {
+                        neighbour.Add(GetCellByPos(new Vector2(Cell[q][r].TilePostition.x + 1, Cell[q][r].TilePostition.y - 1)));
+                        if (neighbour[neighbour.Count - 1].TileBiome == CellBehaviour.BiomeType.Ocean)
+                        {
+                            waterNeighbours++;
+                        }
+                        else
+                        {
+                            FoundNonWater = true;
+                        }
+                    }
+
+                    #endregion
+                    if (FoundNonWater)
+                    {
+                        CellBehaviour SmallestNonWaterTile = neighbour[0];
+
+                        for (int i = 0; i < neighbour.Count; i++)
+                            if (neighbour[i].TileBiome != CellBehaviour.BiomeType.Ocean)
+                            {
+                                SmallestNonWaterTile = neighbour[i];
+                                FoundNonWater = true;
+                                break;
+                            }
+
+                        for (int i = 0; i < neighbour.Count; i++)
+                        {
+                            if (neighbour[i])
+                                if (neighbour[i].TileBiome != CellBehaviour.BiomeType.Ocean)
+                                {
+                                    if (neighbour[i].altitude < SmallestNonWaterTile.altitude)
+                                        SmallestNonWaterTile = neighbour[i];
+                                }
+                        }
+
+                        Cell[q][r].transform.localScale = new Vector3(1, Mathf.Clamp(SmallestNonWaterTile.altitude * 0.1f, 0.1f, 1f), 1);
+                    }
+
+
+                    for (int i = 0; i < neighbour.Count; i++)
+                    {
+                        if (neighbour[i])
+                            WaterLevels.Add(neighbour[i].transform.localScale.y);
+                    }
+
+                    for (int v = 0; v < WaterLevels.Count; v++)
+                        normalWaterLevel += WaterLevels[v];
+
+                    normalWaterLevel /= WaterLevels.Count;
+
+                    Cell[q][r].transform.localScale = new Vector3(1, Mathf.Clamp(normalWaterLevel * 0.95f, 0.1f, 1f), 1);
+
+                    float waterDepth = Mathf.Lerp(0, 1, waterNeighbours / 6f) * 0.75f;
+
+                    Cell[q][r].GetComponent<UVScroller>().SetTexture(ObjectType.Biome, Cell[q][r].gameObject, (float)Cell[q][r].TileBiome, Mathf.Clamp(waterDepth + (Cell[q][r].humidity * 0.25f), 0.1f, 1f));
+                }
+
+            }
+        }
+    }
+    public void GenerateRivers()
+    {
+        float SeaLevel = 0.2f;
+        int RiverCount = 1000;
+
+        for (int q = 0; q < GridSize * 2 + 1; q++)
+        {
+            for (int r = 0; r < goCell[q].Count; r++)
+            {
+                if (Cell[q][r].altitude < SeaLevel)
+                {
+                    Cell[q][r].TileBiome = CellBehaviour.BiomeType.Ocean;
+                    StreamCells.Add(Cell[q][r]);
+                    Cell[q][r].transform.localScale = new Vector3(1, SeaLevel, 1);
+                }
+            }
+        }
+
+        GameObject[] HighestTile = new GameObject[RiverCount];
+        Vector2 HigestTilePos = new Vector2(0, 0);
+        int RiverLength = 300;
+
+        for (int i = 0; i < HighestTile.Length; i++)
+        {
+            int LoopDestroyer = 0;
+            int x = 0;
+            int z = 0;
+            do
+            {
+                if (LoopDestroyer > GridSize)
+                    break;
+                x = UnityEngine.Random.Range(0, GridSize * 2 + 1);
+                z = UnityEngine.Random.Range(0, Cell[x].Length);
+                LoopDestroyer++;
+            } while (Cell[x][z].TileBiome != CellBehaviour.BiomeType.Ocean);
+
+            HighestTile[i] = Cell[x][z].gameObject;
+        }
+
+        CellBehaviour[] neighbour = new CellBehaviour[6];
+
+        for (int q = 0; q < HighestTile.Length; q++)
+        {
+            CellBehaviour NextHighestTile;
+            HighestTile[q].GetComponent<CellBehaviour>().TileBiome = CellBehaviour.BiomeType.Ocean;
+            NextHighestTile = HighestTile[q].GetComponent<CellBehaviour>();
+            HigestTilePos = HighestTile[q].GetComponent<CellBehaviour>().TilePostition;
+
+            for (int i = 0; i < RiverLength; i++)
+            {
+                #region Getting Neighbours
+                if (GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y)) != null)
+                {
+                    neighbour[0] = GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y));
+                    NextHighestTile = neighbour[0];
+                }
+
+                if (GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y + 1)) != null)
+                {
+                    neighbour[1] = GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y + 1));
+                    if (NextHighestTile.altitude > neighbour[1].altitude)
+                    {
+                        NextHighestTile = neighbour[1];
+                    }
+                }
+
+                if (GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y + 1)) != null)
+                {
+                    neighbour[2] = GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y + 1));
+                    if (NextHighestTile.altitude > neighbour[2].altitude)
+                    {
+                        NextHighestTile = neighbour[2];
+                    }
+                }
+
+                if (GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y)) != null)
+                {
+                    neighbour[3] = GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y));
+                    if (NextHighestTile.altitude > neighbour[3].altitude)
+                    {
+                        NextHighestTile = neighbour[3];
+                    }
+                }
+
+                if (GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y - 1)) != null)
+                {
+                    neighbour[4] = GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y - 1));
+                    if (NextHighestTile.altitude > neighbour[4].altitude)
+                    {
+                        NextHighestTile = neighbour[4];
+                    }
+                }
+
+                if (GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y - 1)) != null)
+                {
+                    neighbour[5] = GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y - 1));
+                    if (NextHighestTile.altitude > neighbour[5].altitude)
+                    {
+                        NextHighestTile = neighbour[5];
+                    }
+                }
+                #endregion
+
+                if (i == 0)
+                {
+                    if (NextHighestTile.gameObject == HighestTile[q])
+                    {
+                        break;
+                    }
+
+                    bool[] IsGonnaBeWater = new bool[6];
+                    for (int v = 0; v < 6; v++)
+                    {
+                        IsGonnaBeWater[v] = (UnityEngine.Random.value < 0.5f ? true : false);
+
+                        if (neighbour[v] && IsGonnaBeWater[v])
+                        {
+                            neighbour[v].TileBiome = CellBehaviour.BiomeType.Ocean;
+                        }
+                    }
+                }
+                else if (NextHighestTile.GetComponent<CellBehaviour>().TileBiome == CellBehaviour.BiomeType.Ocean)
+                {
+                    break;
+                }
+                else if (NextHighestTile.gameObject == HighestTile[q])
+                {
+                    for (int v = 0; v < 6; v++)
+                    {
+                        if (neighbour[v])
+                        {
+                            neighbour[v].TileBiome = CellBehaviour.BiomeType.Ocean;
+                        }
+                    }
+
+                    break;
+                }
+
+                NextHighestTile.GetComponent<CellBehaviour>().TileBiome = CellBehaviour.BiomeType.Ocean;
+                StreamCells.Add(NextHighestTile);
+                HighestTile[q] = NextHighestTile.gameObject;
+                HigestTilePos = HighestTile[q].GetComponent<CellBehaviour>().TilePostition;
+            }
+        }
+    }
     void GenerateTerrain()
     {
-       TerrainRandNum = UnityEngine.Random.Range(0, 99999);
-       BiomeRandNum = UnityEngine.Random.Range(0, 99999);
+        TerrainRandNum = UnityEngine.Random.Range(0, 99999);
+        BiomeRandNum = UnityEngine.Random.Range(0, 99999);
 
-        GenerateBiomePerlinNoise();
         GenerateMainTerrainPerlinNoise();
+        GenerateTexture();
+        GenerateBiomePerlinNoise();
+        SetTerrain();
+
+        List<List<GameObject>> CellsToCombine = new List<List<GameObject>>();
+        MeshFilter[] meshFilters = null;
+        CombineInstance[] combine = null;
+        GameObject newChunk = null;
 
         ChunkParent = new GameObject();
         ChunkParent.name = "Chunk Meshes";
-        for (int i = 0; i < CellByType.Count; i++)
+        int celltocombineindex = 0;
+        CellsToCombine.Add(new List<GameObject>());
+
+        for (int q = 0; q < GridSize * 2 + 1; q++)
         {
-            if (CellByType[i].Count > 0)
+            for (int r = 0; r < goCell[q].Count; r++)
             {
-                // CellBehaviour TempCellBehaviour = new CellBehaviour();
-                MeshFilter[] meshFilters = new MeshFilter[CellByType[i].Count];
-                CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-                GameObject newChunk = new GameObject();
-                for (int z = 0; z < CellByType[i].Count; z++)
+                CellsToCombine[celltocombineindex].Add(goCell[q][r]);
+
+                if (CellsToCombine[celltocombineindex].Count > 1500)
                 {
-                    meshFilters[z] = CellByType[i][z].GetComponent<MeshFilter>();
+                    CellsToCombine.Add(new List<GameObject>());
+                    celltocombineindex++;
                 }
-        
-                int x = 0;
-                while (x < meshFilters.Length)
-                {
-                    combine[x].mesh = meshFilters[x].sharedMesh;
-                    combine[x].transform = meshFilters[x].transform.localToWorldMatrix;
-                    CellByType[i][x].GetComponent<MeshRenderer>().enabled = false;
-                    x++;
-                }
-                newChunk.AddComponent<MeshFilter>();
-                newChunk.AddComponent<MeshRenderer>();
-                newChunk.transform.GetComponent<MeshFilter>().mesh = new Mesh();
-                newChunk.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-                newChunk.transform.name = System.Convert.ToString((CellBehaviour.BiomeType)i);
-                newChunk.GetComponent<MeshRenderer>().material = CellByType[i][0].GetComponent<CellBehaviour>().CellMaterial[(int)CellByType[i][0].GetComponent<CellBehaviour>().TileBiome];
-                newChunk.transform.gameObject.SetActive(true);
-                newChunk.transform.localScale = new Vector3(1,0.0f,1);
-                newChunk.transform.SetParent(ChunkParent.transform);
-                Chunks.Add(newChunk);
             }
         }
-    }
+
+        for (int i = 0; i < CellsToCombine.Count; i++)
+        {
+            meshFilters = new MeshFilter[CellsToCombine[i].Count];
+
+            for (int z = 0; z < CellsToCombine[i].Count; z++)
+            {
+                meshFilters[z] = CellsToCombine[i][z].GetComponent<MeshFilter>();
+            }
+
+            combine = new CombineInstance[meshFilters.Length];
+
+            int x = 0;
+            while (x < meshFilters.Length)
+            {
+                combine[x].mesh = meshFilters[x].sharedMesh;
+                combine[x].transform = meshFilters[x].transform.localToWorldMatrix;
+                CellsToCombine[i][x].GetComponent<MeshRenderer>().enabled = false;
+                x++;
+            }
+
+            newChunk = new GameObject();
+            newChunk.AddComponent<MeshFilter>();
+            newChunk.AddComponent<MeshRenderer>();
+            newChunk.transform.GetComponent<MeshFilter>().mesh = new Mesh();
+            newChunk.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+            newChunk.transform.name = "Chunk" + i;
+            newChunk.GetComponent<MeshRenderer>().sharedMaterial = UVMap;
+            newChunk.transform.gameObject.SetActive(true);
+            newChunk.transform.localScale = new Vector3(1, 0.0f, 1);
+            newChunk.transform.SetParent(ChunkParent.transform);
+            Chunks.Add(newChunk);
+
+        }
+    } 
 
     public void SetText(string inputText)
     {
@@ -367,13 +729,13 @@ public class SpawnGrid : MonoBehaviour
         return cube_distance(ac, bc);
     }
 
-    CellBehaviour GetCellByPos(int x, int y)
+    CellBehaviour GetCellByPos(Vector2 pos)
     {
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {
             for (int r = 0; r < goCell[q].Count; r++)
             {
-                if (Cell[q][r].TilePostition.x == x && Cell[q][r].TilePostition.y == y)
+                if (Cell[q][r].TilePostition.x == pos.x && Cell[q][r].TilePostition.y == pos.y)
                 {
                     return Cell[q][r];
                 }

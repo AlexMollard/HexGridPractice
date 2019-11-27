@@ -851,6 +851,46 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2276941452615168377, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2276941452615168377, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5092760148636303438, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5092760148636303438, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2990666409425286473, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2990666409425286473, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.20465466
+      objectReference: {fileID: 0}
+    - target: {fileID: 2990666409425286473, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.5943396
+      objectReference: {fileID: 0}
+    - target: {fileID: 2990666409425286473, guid: 4db9edc7f736eb14a9cf26b0716c9223,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.24711154
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4db9edc7f736eb14a9cf26b0716c9223, type: 3}
 --- !u!1 &973754604
@@ -1073,6 +1113,8 @@ MonoBehaviour:
   Towers: {fileID: 0}
   ChunkParent: {fileID: 0}
   IsOnMap: 1
+  UVMap: {fileID: 2100000, guid: f26b042f35ed9354596d40b4c7bab468, type: 2}
+  StreamCells: []
 --- !u!114 &1054595211
 MonoBehaviour:
   m_ObjectHideFlags: 0

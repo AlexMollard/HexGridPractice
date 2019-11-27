@@ -51,7 +51,6 @@ public class PieGraphManager : MonoBehaviour
     public void UpdateChart()
     {
         Total = 0;
-        Biome.GetComponent<Image>().color = cell.CellMaterial[(int)cell.TileBiome].color;
         BiomeText.text = System.Convert.ToString(cell.TileBiome);
         string debugLine = "";
         for (int i = 0; i < Elements.Length; i++)
@@ -93,7 +92,6 @@ public class PieGraphManager : MonoBehaviour
             Transform WedgeTransform = RefElements[i].Wedge.transform;
             currentRotation += RefElements[i].Wedge.GetComponent<Image>().fillAmount * 360;
             WedgeTransform.rotation = Quaternion.Euler(new Vector3(WedgeTransform.rotation.x, WedgeTransform.rotation.y, currentRotation));
-
         }
 
         // Contains

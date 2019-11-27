@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2931261066113818464}
   - component: {fileID: 631563891457765224}
   m_Layer: 0
-  m_Name: Tile
+  m_Name: MapTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: f26b042f35ed9354596d40b4c7bab468, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -97,24 +97,8 @@ MonoBehaviour:
   TilePostition: {x: 0, y: 0}
   altitude: 0
   humidity: 0
+  TileType: 0
   TileBiome: 0
-  CellMaterial:
-  - {fileID: 2100000, guid: cf1c137eab79efc4cb73b9816373d5a7, type: 2}
-  - {fileID: 2100000, guid: 40a937377d4f6c44d8839065a8d087c9, type: 2}
-  - {fileID: 2100000, guid: d37cdf98bed91a14181b7c5f996adbb1, type: 2}
-  - {fileID: 2100000, guid: 340fac052b02e2b4295a9e210ccb01f6, type: 2}
-  - {fileID: 2100000, guid: fd5dcdcf76331fd4d9eaef375c2ceeed, type: 2}
-  - {fileID: 2100000, guid: bebb74b073935d84f8fe767c051b341d, type: 2}
-  - {fileID: 2100000, guid: 56ce1328685742148a7d9e4064349156, type: 2}
-  - {fileID: 2100000, guid: e68b024c490e7114db30549a6a36d213, type: 2}
-  - {fileID: 2100000, guid: e35995ef658ecf94b8c51655bbe01bb3, type: 2}
-  - {fileID: 2100000, guid: acbe84d57126236479ff468f130825de, type: 2}
-  - {fileID: 2100000, guid: ea6e97b772959b043a1b02e46b20b15f, type: 2}
-  - {fileID: 2100000, guid: 675e09e411f684749ae1f324ba0c2f74, type: 2}
-  - {fileID: 2100000, guid: 5b897964e465aef4884d830c4ddf405d, type: 2}
-  - {fileID: 2100000, guid: 345ff7858dfb6f3429e47d7e5401a51b, type: 2}
-  - {fileID: 2100000, guid: dde43f4c2f68f8d4ebf7acb626c3a33c, type: 2}
-  - {fileID: 2100000, guid: 660b3f44318ec3749ad3f6c9f562847c, type: 2}
   Trees:
   - {fileID: 100000, guid: 641d995988d1b964ba826913512f77c2, type: 3}
   Stones:
@@ -189,6 +173,7 @@ MonoBehaviour:
   HasShrubType: 
   HasAnimalType: 
   CellColors: []
+  TowerMeshParent: {fileID: 0}
   TowerParent: {fileID: 0}
   perlinFrequancy: 0.15
 --- !u!114 &2931261066113818464
@@ -219,7 +204,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53830238092a3cb4b98ec1f827053f30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NumberOfSubTexturesAcross: 32
   ImageSize: {x: 0, y: 0}
   TextureSize: {x: 0, y: 0}
   OriginalUVS: []
   Hexagon: {fileID: 4300000, guid: 4b569879128d71646b67b639ed6040ed, type: 3}
+  UvAtlas: {fileID: 21300000, guid: 96b5b3eba29479345afa83766de3c7af, type: 3}

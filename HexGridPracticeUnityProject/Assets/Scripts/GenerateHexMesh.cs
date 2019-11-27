@@ -19,7 +19,7 @@ public class GenerateHexMesh : MonoBehaviour
     private void Update()
     {
         
-        scroller.SetTexture(CellType, Humidity, false, gameObject);
+        scroller.SetTexture(ObjectType.Cell, gameObject, CellType, Humidity);
 
         //Mesh mesh = GetComponent<MeshFilter>().mesh;
         //Vector3[] vertices = mesh.vertices;

@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class BiomeManager : MonoBehaviour
 {
-    //public enum BiomeType { Taiga, Savanna, Tundra, RainForest, Desert, Forest, Plains, Snow, Ocean, Beach, Bare, Scorched, HotRainForest, WetDesert, TropSeasonForest, DeepOcean }
-    public enum CellType { Water, Sand, Dirt, Grass, Stone, Snow, Ice, Lava };  //Need to add oil
+    public enum CellType { Water, Sand, Dirt, Grass, Stone, Snow, Ice, Lava, Oil, Foliage };
     public enum TowerType {Ore,Tree,Shrub,Animal};
-    public enum OreType { Lipidolite, RockSalt, Carnallite, Limestone, Cuprites, Bauxite, Zencite, Galena, Magnetite, Gold, Coal, Oil}; // need to remove oil
-    public enum TreeType { Conifer, Deciduous, Spruce, Acacia, SnowPine, RubberTree, JoshuaTree, PaloVerde, Cedar, Oak, Maple, CorkTree, ManGroves, BlackWood, BurntTree, KapokTree, Ceiba, Bamboo };
+    public enum OreType { Lipidolite, RockSalt, Carnallite, Limestone, Cuprites, Bauxite, Zencite, Galena, Magnetite, Gold, Coal}; // need to remove oil
+    public enum TreeType { Conifer, Deciduous, Spruce, Acacia, SnowPine, RubberTree, JoshuaTree, PaloVerde, Cedar, Oak, Maple, CorkTree, ManGroves, BlackWood, KapokTree, Ceiba};
     public enum ShrubType { BlueBerries, HaircapMoss, Cloudberry, RedBerry, Cactus, WaxMyrtle };
     public enum AnimalType { Cow, Sheep, Deer, Wolf, Snake, Goat };
 
@@ -129,9 +128,9 @@ public class BiomeManager : MonoBehaviour
             cell.CellType = CellType.Sand;
             if (cell.Humidity < 0.4f)
             {
-                cell.CellType = CellType.Water;
+                cell.CellType = CellType.Oil;
                 cell.TowerType = TowerType.Ore;
-                cell.TowerIndex = (int)OreType.Oil;
+                cell.TowerIndex = 404;
             }
 
         }

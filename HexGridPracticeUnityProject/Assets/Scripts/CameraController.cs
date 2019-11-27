@@ -83,7 +83,7 @@ public class CameraController : MonoBehaviour
         if (dt > 1.0 / updateRate)
         {
             fps = frameCount / dt;
-            FPS.text = "Fps: " + Mathf.Round((float)fps);
+            FPS.text = "Fps: " + (Mathf.Round((float)fps * 10)) / 10.0f;
             frameCount = 0;
             dt -= 1.0 / updateRate;
         }
@@ -244,17 +244,12 @@ public class CameraController : MonoBehaviour
                         Graph.cell = hit.transform.GetComponent<CellBehaviour>();
                         InfoCanvas.SetActive(true);
                         Graph.UpdateChart();
-                        gameController.GetComponent<SpawnGrid>().IsOnMap = false;
                     }
                 }
                 else if (!BlockedByUI)
                 {
                     InfoCanvas.SetActive(false);
                 }
-            }
-            else
-            {
-                gameController.GetComponent<SpawnGrid>().IsOnMap = true;
             }
         }
 
@@ -282,12 +277,13 @@ public class CameraController : MonoBehaviour
 
         direction = SelectedCellPostition - transform.position;
         toRotation = Quaternion.FromToRotation(transform.forward, direction);
-
+        gameController.GetComponent<SpawnGrid>().IsOnMap = false;
         SelectedCellPostition = new Vector3(SelectedCell.transform.position.x, SelectedCell.transform.localScale.y / 5, SelectedCell.transform.position.z);
     }
 
     private void ReturnToMap()
     {
+        gameController.GetComponent<SpawnGrid>().IsOnMap = true;
         ReturnToMapButton.SetActive(false);
         MainMenuButton.SetActive(true);
         MapParent.SetActive(true);
