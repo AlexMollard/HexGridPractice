@@ -91,8 +91,8 @@ public class CellBehaviour : MonoBehaviour
 
         humidity = Humidity;
         altitude = Altitude;
-        if (Altitude < 0.15) return BiomeType.Ocean;
-        if (Altitude < 0.25) return BiomeType.Beach;
+ 
+        if (Altitude < 0.35) return BiomeType.Beach;
 
         if (Altitude > 0.8)
         {
@@ -202,7 +202,7 @@ public class CellBehaviour : MonoBehaviour
         //else
         //    transform.localScale = new Vector3(1f, Mathf.Lerp(1f, 75f, altitude / 7.5f), 1f);
 
-       transform.localScale = new Vector3(1f, altitude * 2, 1f);
+       transform.localScale = new Vector3(1f, altitude, 1f);
 
 
 

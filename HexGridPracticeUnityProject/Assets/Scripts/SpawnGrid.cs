@@ -68,7 +68,7 @@ public class SpawnGrid : MonoBehaviour
     int texHeight = 0;
  
      //MASK SETTINGS
-    float maskThreshold = 2.0f;
+    float maskThreshold = 2f;
 
     //REFERENCES
     Texture2D mask;
@@ -215,7 +215,6 @@ public class SpawnGrid : MonoBehaviour
 
     void GenerateMainTerrainPerlinNoise()
     {
-
         Noise = new float[GridSize * 2 + 1][];
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {
@@ -236,18 +235,15 @@ public class SpawnGrid : MonoBehaviour
 
     void GenerateTexture()
     {
-        Bounds = new float[GridSize * 2 + 1][];
-        Vector2 maskCenter = new Vector2(0, 0);
+        Vector2 maskCenter = new Vector3(0, 0);
 
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {
-            Bounds[q] = new float[goCell[q].Count];
             for (int r = 0; r < goCell[q].Count; r++)
             { 
-                float distFromCenter = Vector2.Distance(maskCenter, Cell[q][r].TilePostition);
-                float maskPixel = (0.5f - (distFromCenter / goCell[q].Count)) * maskThreshold;
-                Bounds[q][r] = maskPixel;
-                Noise[q][r] += Bounds[q][r];
+                float distFromCenter = Vector2.Distance(maskCenter, AxialFlatToWorld((int)Cell[q][r].TilePostition.x, (int)Cell[q][r].TilePostition.y));
+                float maskPixel = (0.5f - (distFromCenter / goCell[q].Count) );
+               // Noise[q][r] += maskPixel;
             }
         }
 
@@ -426,7 +422,7 @@ public class SpawnGrid : MonoBehaviour
 
                     normalWaterLevel /= WaterLevels.Count;
 
-                    Cell[q][r].transform.localScale = new Vector3(1, Mathf.Clamp(normalWaterLevel * 0.95f, 0.1f, 1f), 1);
+                    Cell[q][r].transform.localScale = new Vector3(1, normalWaterLevel, 1);
 
                     float waterDepth = Mathf.Lerp(0, 1, waterNeighbours / 6f) * 0.75f;
 
@@ -438,9 +434,11 @@ public class SpawnGrid : MonoBehaviour
     }
     public void GenerateRivers()
     {
-        float SeaLevel = 0.2f;
-        int RiverCount = 1000;
-
+        float SeaLevel = 0.1f;
+        int RiverCount = 0;
+        CellBehaviour HighestTileOnMap = Cell[0][0];
+        List<GameObject> HighestTile = new List<GameObject>();
+        HighestTile.Add(goCell[0][0]);
         for (int q = 0; q < GridSize * 2 + 1; q++)
         {
             for (int r = 0; r < goCell[q].Count; r++)
@@ -451,92 +449,72 @@ public class SpawnGrid : MonoBehaviour
                     StreamCells.Add(Cell[q][r]);
                     Cell[q][r].transform.localScale = new Vector3(1, SeaLevel, 1);
                 }
+
+                if (HighestTileOnMap.altitude < Cell[q][r].altitude)
+                    HighestTileOnMap = Cell[q][r];
+
+                //if (HexDistance(HighestTile[0].GetComponent<CellBehaviour>().TilePostition, Cell[q][r].TilePostition) > )
+                //{
+                //
+                //}
             }
         }
+        HighestTile[0] = HighestTileOnMap.gameObject;
 
-        GameObject[] HighestTile = new GameObject[RiverCount];
-        Vector2 HigestTilePos = new Vector2(0, 0);
-        int RiverLength = 300;
-
-        for (int i = 0; i < HighestTile.Length; i++)
+        int RiverLength = 200;
+        CellBehaviour[] neighbours = null;
+        for (int i = 0; i < 0; i++)
         {
-            int LoopDestroyer = 0;
-            int x = 0;
-            int z = 0;
-            do
+            neighbours = GetNeighbours(HighestTile[i].GetComponent<CellBehaviour>());
+            for (int z = 0; z < neighbours.Length; z++)
             {
-                if (LoopDestroyer > GridSize)
-                    break;
-                x = UnityEngine.Random.Range(0, GridSize * 2 + 1);
-                z = UnityEngine.Random.Range(0, Cell[x].Length);
-                LoopDestroyer++;
-            } while (Cell[x][z].TileBiome != CellBehaviour.BiomeType.Ocean);
-
-            HighestTile[i] = Cell[x][z].gameObject;
+                neighbours[z].GetComponent<CellBehaviour>().TileBiome = CellBehaviour.BiomeType.Ocean;
+                StreamCells.Add(neighbours[z]);
+                HighestTile.Add(neighbours[z].gameObject);
+                CellBehaviour[] Innerneighbours = null;
+                if (neighbours[z] != null)
+                {
+                    Innerneighbours = GetNeighbours(neighbours[z].GetComponent<CellBehaviour>());
+                    for (int p = 0; p < Innerneighbours.Length; p++)
+                    {
+                        Innerneighbours[p].GetComponent<CellBehaviour>().TileBiome = CellBehaviour.BiomeType.Ocean;
+                        StreamCells.Add(Innerneighbours[p]);
+                        HighestTile.Add(Innerneighbours[p].gameObject);
+                        Innerneighbours[p].altitude *= 0.9f;
+                    }
+                }
+            }
         }
 
         CellBehaviour[] neighbour = new CellBehaviour[6];
 
-        for (int q = 0; q < HighestTile.Length; q++)
+        for (int q = 0; q < HighestTile.Count; q++)
         {
             CellBehaviour NextHighestTile;
+            CellBehaviour SecondHighestTile = null;
             HighestTile[q].GetComponent<CellBehaviour>().TileBiome = CellBehaviour.BiomeType.Ocean;
             NextHighestTile = HighestTile[q].GetComponent<CellBehaviour>();
-            HigestTilePos = HighestTile[q].GetComponent<CellBehaviour>().TilePostition;
 
             for (int i = 0; i < RiverLength; i++)
             {
                 #region Getting Neighbours
-                if (GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y)) != null)
-                {
-                    neighbour[0] = GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y));
-                    NextHighestTile = neighbour[0];
-                }
 
-                if (GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y + 1)) != null)
+                neighbour = GetNeighbours(HighestTile[q].GetComponent<CellBehaviour>());
+
+                NextHighestTile = HighestTileOnMap;
+
+                for (int l = 0; l < 6; l++)
                 {
-                    neighbour[1] = GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y + 1));
-                    if (NextHighestTile.altitude > neighbour[1].altitude)
+                    if (neighbour[l] != null)
                     {
-                        NextHighestTile = neighbour[1];
+                        if (NextHighestTile.altitude > neighbour[l].altitude)
+                        {
+                            SecondHighestTile = NextHighestTile;
+                            NextHighestTile = neighbour[l];
+                        }
                     }
                 }
 
-                if (GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y + 1)) != null)
-                {
-                    neighbour[2] = GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y + 1));
-                    if (NextHighestTile.altitude > neighbour[2].altitude)
-                    {
-                        NextHighestTile = neighbour[2];
-                    }
-                }
-
-                if (GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y)) != null)
-                {
-                    neighbour[3] = GetCellByPos(new Vector2(HigestTilePos.x - 1, HigestTilePos.y));
-                    if (NextHighestTile.altitude > neighbour[3].altitude)
-                    {
-                        NextHighestTile = neighbour[3];
-                    }
-                }
-
-                if (GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y - 1)) != null)
-                {
-                    neighbour[4] = GetCellByPos(new Vector2(HigestTilePos.x, HigestTilePos.y - 1));
-                    if (NextHighestTile.altitude > neighbour[4].altitude)
-                    {
-                        NextHighestTile = neighbour[4];
-                    }
-                }
-
-                if (GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y - 1)) != null)
-                {
-                    neighbour[5] = GetCellByPos(new Vector2(HigestTilePos.x + 1, HigestTilePos.y - 1));
-                    if (NextHighestTile.altitude > neighbour[5].altitude)
-                    {
-                        NextHighestTile = neighbour[5];
-                    }
-                }
                 #endregion
 
                 if (i == 0)
@@ -570,17 +548,60 @@ public class SpawnGrid : MonoBehaviour
                             neighbour[v].TileBiome = CellBehaviour.BiomeType.Ocean;
                         }
                     }
-
                     break;
+                }
+
+                if (SecondHighestTile)
+                {
+                    StreamCells.Add(SecondHighestTile);
+                    SecondHighestTile.GetComponent<CellBehaviour>().TileBiome = CellBehaviour.BiomeType.Ocean;
                 }
 
                 NextHighestTile.GetComponent<CellBehaviour>().TileBiome = CellBehaviour.BiomeType.Ocean;
                 StreamCells.Add(NextHighestTile);
                 HighestTile[q] = NextHighestTile.gameObject;
-                HigestTilePos = HighestTile[q].GetComponent<CellBehaviour>().TilePostition;
             }
         }
     }
+
+    CellBehaviour[] GetNeighbours(CellBehaviour cell)
+    {
+        CellBehaviour[] neighbour = new CellBehaviour[6];
+        Vector2 TilePos = cell.TilePostition;
+
+        if (GetCellByPos(new Vector2(TilePos.x + 1, TilePos.y)) != null)
+            neighbour[0] = GetCellByPos(new Vector2(TilePos.x + 1, TilePos.y));
+        else
+            neighbour[0] = null;
+
+        if (GetCellByPos(new Vector2(TilePos.x, TilePos.y + 1)) != null)
+            neighbour[1] = GetCellByPos(new Vector2(TilePos.x, TilePos.y + 1));
+        else
+            neighbour[1] = null;
+
+        if (GetCellByPos(new Vector2(TilePos.x - 1, TilePos.y + 1)) != null)
+            neighbour[2] = GetCellByPos(new Vector2(TilePos.x - 1, TilePos.y + 1));
+        else
+            neighbour[2] = null;
+
+        if (GetCellByPos(new Vector2(TilePos.x - 1, TilePos.y)) != null)
+            neighbour[3] = GetCellByPos(new Vector2(TilePos.x - 1, TilePos.y));
+        else
+            neighbour[3] = null;
+
+        if (GetCellByPos(new Vector2(TilePos.x, TilePos.y - 1)) != null)
+            neighbour[4] = GetCellByPos(new Vector2(TilePos.x, TilePos.y - 1));
+        else
+            neighbour[4] = null;
+
+        if (GetCellByPos(new Vector2(TilePos.x + 1, TilePos.y - 1)) != null)
+            neighbour[5] = GetCellByPos(new Vector2(TilePos.x + 1, TilePos.y - 1));
+        else
+            neighbour[5] = null;
+
+        return neighbour;
+    }
+
     void GenerateTerrain()
     {
         TerrainRandNum = UnityEngine.Random.Range(0, 99999);
